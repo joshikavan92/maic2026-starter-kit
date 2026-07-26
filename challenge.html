@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#123a6b">
+<title>The Mac Admin Challenge · MAIC 2026</title>
+<style>
+  :root{
+    --purple:#1e50b0;      /* deep blue */
+    --purple-2:#5aa2ff;    /* accent blue */
+    --magenta:#22c1dc;     /* cyan */
+    --navy:#081226;
+    --navy-2:#0e2244;
+    --card:#122a50;
+    --card-2:#16305c;
+    --ink:#eaf1ff;
+    --muted:#9db4d8;
+    --good:#35d0a5;
+    --bad:#ff6b8a;
+    --gold:#f5c542;
+    --line:rgba(255,255,255,.12);
+    --spectrum:linear-gradient(90deg,#4f7df0,#22c1dc,#35d0a5,#f5c542,#f59042,#ec5f9e,#a96be8);
+    --blue-grad:linear-gradient(135deg,#2f6fed,#22c1dc);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(125% 90% at 50% -8%, #17468c 0%, #0d2650 45%, #060f24 100%);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{content:"";position:fixed;top:0;left:0;right:0;height:5px;background:var(--spectrum);z-index:99}
+  .wrap{max-width:520px;margin:0 auto;padding:24px 18px 40px;min-height:100vh;display:flex;flex-direction:column}
+  .brandbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.3px}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--spectrum);display:grid;place-items:center;font-size:15px;box-shadow:0 4px 16px rgba(47,111,237,.5)}
+  .logo small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+  .prog{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:14px 0 22px}
+  .prog i{display:block;height:100%;width:0;border-radius:99px;background:var(--spectrum);transition:width .45s cubic-bezier(.4,0,.2,1)}
+  .screen{flex:1;display:none;animation:rise .45s cubic-bezier(.2,.7,.2,1)}
+  .screen.active{display:flex;flex-direction:column}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--purple-2);font-weight:800;margin-bottom:10px}
+  h1{font-size:30px;line-height:1.12;margin:0 0 12px;font-weight:850;letter-spacing:-.5px}
+  h2{font-size:22px;line-height:1.2;margin:0 0 8px;font-weight:800;letter-spacing:-.3px}
+  p{color:var(--muted);line-height:1.55;margin:0 0 16px;font-size:15px}
+  .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:5px 12px;margin-bottom:18px}
+  .hero-c{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 24px}
+  .chip{flex:1;min-width:calc(50% - 4px);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+  .chip b{display:block;font-size:15px;margin-bottom:2px}
+  .chip span{font-size:12px;color:var(--muted)}
+  .btn{display:block;width:100%;border:0;border-radius:15px;padding:17px 20px;font-size:16.5px;font-weight:800;cursor:pointer;color:#fff;
+    background:var(--blue-grad);box-shadow:0 10px 28px rgba(47,111,237,.42);transition:transform .12s,box-shadow .2s;letter-spacing:.2px}
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--line);box-shadow:none;color:var(--ink)}
+  .btn:disabled{opacity:.35;cursor:default;box-shadow:none}
+  .foot{margin-top:auto;padding-top:20px}
+  .qmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .qmeta .n{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  .pill{font-size:10.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 11px;border-radius:99px}
+  .pill.myth{background:rgba(192,38,168,.18);color:#ff8fe0;border:1px solid rgba(192,38,168,.4)}
+  .pill.scn{background:rgba(139,63,240,.18);color:#c3a0ff;border:1px solid rgba(139,63,240,.4)}
+  .opt{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:16px 16px;margin-bottom:11px;color:var(--ink);font-size:15.5px;font-weight:600;cursor:pointer;transition:.15s;line-height:1.4;display:flex;align-items:center;gap:13px}
+  .opt:active{transform:scale(.985)}
+  .opt .k{flex:0 0 30px;height:30px;border-radius:9px;background:rgba(255,255,255,.07);display:grid;place-items:center;font-weight:800;font-size:14px;color:var(--muted)}
+  .opt.correct{border-color:var(--good);background:rgba(34,197,139,.14)}
+  .opt.correct .k{background:var(--good);color:#04150e}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,93,115,.13)}
+  .opt.wrong .k{background:var(--bad);color:#2a0007}
+  .opt.dim{opacity:.5}
+  .opt[disabled]{cursor:default}
+  .reveal{background:var(--card-2);border:1px solid var(--line);border-left:4px solid var(--purple-2);border-radius:12px;padding:15px 16px;margin:4px 0 16px;animation:pop .35s;display:none}
+  .reveal.show{display:block}
+  .reveal .verdict{font-weight:850;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .reveal p{margin:0;font-size:14px;color:#d8d0f5}
+  .reveal .cc{display:inline-block;margin-top:10px;font-size:10.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+  .rate{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .rate .rh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .rate .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;flex:0 0 34px}
+  .rate .rh b{font-size:16px;display:block}
+  .rate .rh span{font-size:12.5px;color:var(--muted)}
+  .stars{display:flex;gap:8px}
+  .star{flex:1;aspect-ratio:1;border-radius:11px;border:1.5px solid var(--line);background:rgba(255,255,255,.03);font-size:20px;display:grid;place-items:center;cursor:pointer;transition:.12s;color:#4b4470}
+  .star.on{background:linear-gradient(135deg,var(--purple-2),var(--magenta));border-color:transparent;color:#fff;transform:scale(1.04)}
+  /* results */
+  .score-ring{position:relative;width:150px;height:150px;margin:6px auto 8px}
+  .score-ring svg{transform:rotate(-90deg)}
+  .score-ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .score-ring .val b{font-size:40px;font-weight:850;line-height:1}
+  .score-ring .val span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .archetype{text-align:center;background:linear-gradient(135deg,rgba(47,111,237,.24),rgba(34,193,220,.18));border:1px solid rgba(90,162,255,.45);border-radius:16px;padding:16px;margin:8px 0 18px}
+  .archetype .em{font-size:30px}
+  .archetype b{display:block;font-size:19px;margin:4px 0 4px;letter-spacing:-.2px}
+  .archetype span{font-size:13px;color:#d8d0f5;line-height:1.5}
+  .cbars{margin:8px 0 20px}
+  .cbar{margin-bottom:13px}
+  .cbar .lab{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;margin-bottom:6px}
+  .cbar .lab span{color:var(--muted);font-weight:700}
+  .track{height:11px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+  .track i{display:block;height:100%;border-radius:99px;width:0;transition:width .9s cubic-bezier(.3,.8,.3,1)}
+  .sec-h{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--purple-2);font-weight:800;margin:22px 0 12px}
+  .step{display:flex;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:10px;animation:pop .4s both}
+  .step .si{flex:0 0 30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--purple-2),var(--magenta));display:grid;place-items:center;font-weight:800;font-size:14px}
+  .step b{font-size:14.5px;display:block;margin-bottom:2px}
+  .step p{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
+  .res{display:block;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;margin-bottom:9px;text-decoration:none;color:var(--ink);transition:.15s;display:flex;align-items:center;gap:12px}
+  .res:active{transform:scale(.99)}
+  .res .ri{flex:0 0 26px;font-size:20px}
+  .res b{font-size:14.5px;display:block}
+  .res span{font-size:12.5px;color:var(--muted)}
+  .res .arr{margin-left:auto;color:var(--muted);font-size:18px}
+  .note{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.5}
+  .kw{color:var(--purple-2);font-weight:800}
+  .brand-foot{text-align:center;margin-top:26px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);letter-spacing:.5px}
+  .brand-foot b{color:var(--ink)}
+  .cardcap{display:flex;gap:8px;margin-top:10px}
+  .cardcap .btn{flex:1;font-size:14px;padding:14px}
+  .btn.big{margin-top:8px}
+  .btn.kit{display:block;text-align:center;text-decoration:none;margin-top:10px;background:var(--spectrum);color:#0b1226;font-weight:850}
+  .iconbtn{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;border-radius:11px;font-size:17px;cursor:pointer;line-height:1;transition:.15s}
+  .iconbtn:active{transform:scale(.92)}
+  .namein{width:100%;padding:15px 16px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);color:var(--ink);font-size:16px;font-family:inherit;margin-bottom:11px;outline:none;transition:.15s}
+  .namein:focus{border-color:var(--purple-2);box-shadow:0 0 0 3px rgba(90,162,255,.18)}
+  .namein::placeholder{color:#6f82a8}
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:200;display:none}
+  .pop-in{animation:pop .5s cubic-bezier(.2,.8,.3,1.2) both}
+  .score-ring .val b{background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar">
+    <div class="logo"><span class="mark">⌘</span><div>Mac Admin Challenge<small>MAIC 2026 · Engage · Empower · Elevate</small></div></div>
+    <button id="mute" class="iconbtn" onclick="toggleMute()" aria-label="Toggle sound">🔊</button>
+  </div>
+  <canvas id="confetti"></canvas>
+  <div class="prog"><i id="bar"></i></div>
+
+  <!-- WELCOME -->
+  <section class="screen active" id="s-welcome">
+    <span class="tag">The 90-second challenge</span>
+    <h1>So you want to be a <span style="background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">great Mac Admin?</span></h1>
+    <p>Bust a few myths, survive some real-world calls, then get your personal <b style="color:var(--ink)">Mac Admin Readiness Card</b> — built on the 4 C's every successful admin lives by.</p>
+    <div class="hero-c">
+      <div class="chip"><b>🧭 Curiosity</b><span>Always be learning</span></div>
+      <div class="chip"><b>⚙️ Command</b><span>Own the fundamentals</span></div>
+      <div class="chip"><b>⌨️ Code</b><span>Automate yourself</span></div>
+      <div class="chip"><b>🤝 Community</b><span>You're never alone</span></div>
+    </div>
+    <div class="foot">
+      <input id="pname" class="namein" maxlength="22" autocomplete="off" placeholder="Your name (optional — goes on your card)">
+      <button class="btn" onclick="startGame()">Start the challenge →</button>
+      <div class="note">Runs entirely on your phone · nothing is uploaded · ~2 minutes</div>
+    </div>
+  </section>
+
+  <!-- MYTHS -->
+  <section class="screen" id="s-myth">
+    <div class="qmeta"><span class="n" id="m-count">Myth 1 of 5</span><span class="pill myth">Myth or Legit?</span></div>
+    <h2 id="m-q"></h2>
+    <div id="m-opts"></div>
+    <div class="reveal" id="m-reveal">
+      <div class="verdict" id="m-verdict"></div>
+      <p id="m-exp"></p>
+      <span class="cc" id="m-cc"></span>
+    </div>
+    <div class="foot"><button class="btn" id="m-next" style="display:none" onclick="nextMyth()">Next →</button></div>
+  </section>
+
+  <!-- SCENARIOS -->
+  <section class="screen" id="s-scn">
+    <div class="qmeta"><span class="n" id="c-count">Scenario 1 of 4</span><span class="pill scn">You're on call</span></div>
+    <h2 id="c-q"></h2>
+    <p id="c-sub" style="margin-top:-4px"></p>
+    <div id="c-opts"></div>
+    <div class="reveal" id="c-reveal">
+      <div class="verdict" id="c-verdict"></div>
+      <p id="c-exp"></p>
+      <span class="cc" id="c-cc"></span>
+    </div>
+    <div class="foot"><button class="btn" id="c-next" style="display:none" onclick="nextScn()">Next →</button></div>
+  </section>
+
+  <!-- SELF RATING -->
+  <section class="screen" id="s-rate">
+    <span class="eyebrow">One last thing</span>
+    <h2>Rate yourself, honestly</h2>
+    <p>Tap the stars for where you are <i>today</i>. No wrong answers — this shapes your roadmap.</p>
+    <div id="rate-list"></div>
+    <div class="foot"><button class="btn" id="rate-go" disabled onclick="finish()">See my Readiness Card →</button></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="s-result">
+    <span class="eyebrow" id="rHead" style="text-align:center;display:block">Your Mac Admin Readiness Card</span>
+    <div class="score-ring">
+      <svg width="150" height="150">
+        <circle cx="75" cy="75" r="66" stroke="rgba(255,255,255,.08)" stroke-width="12" fill="none"/>
+        <circle id="ring" cx="75" cy="75" r="66" stroke="url(#g)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="415" stroke-dashoffset="415"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f7df0"/><stop offset="0.3" stop-color="#22c1dc"/><stop offset="0.55" stop-color="#35d0a5"/><stop offset="0.75" stop-color="#f5c542"/><stop offset="1" stop-color="#ec5f9e"/></linearGradient></defs>
+      </svg>
+      <div class="val"><b id="score">0</b><span>Readiness</span></div>
+    </div>
+    <div class="archetype">
+      <div class="em" id="a-em">🚀</div>
+      <b id="a-name"></b>
+      <span id="a-desc"></span>
+    </div>
+    <div class="cbars" id="cbars"></div>
+
+    <div class="sec-h">🎯 Your 3 next moves</div>
+    <div id="steps"></div>
+
+    <div class="sec-h">🔗 Plug into the community</div>
+    <a class="res" href="https://join.slack.com/t/macadmins/shared_invite" target="_blank" rel="noopener"><span class="ri">💬</span><div><b>MacAdmins Slack — #macadminsindia</b><span>40k+ admins · your 24/7 lifeline</span></div><span class="arr">→</span></a>
+    <a class="res" href="https://macadmins.in/join-us" target="_blank" rel="noopener"><span class="ri">🇮🇳</span><div><b>Mac Admins India</b><span>Telegram, huddles & tech sessions</span></div><span class="arr">→</span></a>
+    <a class="res" href="https://macadmins.in/mentorship-program" target="_blank" rel="noopener"><span class="ri">🧑‍🏫</span><div><b>Mentorship Program</b><span>Get paired with a senior admin</span></div><span class="arr">→</span></a>
+    <a class="res" href="https://www.youtube.com/@macadminsindia" target="_blank" rel="noopener"><span class="ri">▶️</span><div><b>Mac Admins India on YouTube</b><span>Past sessions & recordings</span></div><span class="arr">→</span></a>
+
+    <button class="btn big" onclick="downloadCard()">⬇&nbsp; Download my Readiness Card</button>
+    <div class="cardcap">
+      <button class="btn ghost" onclick="shareCard()">Share</button>
+      <button class="btn ghost" onclick="restart()">↺ Retake</button>
+    </div>
+    <a class="btn kit" id="kitBtn" href="#" target="_blank" rel="noopener">🎁&nbsp; Get the Mac Admin Starter Kit →</a>
+    <div class="brand-foot">Made for <b>Mac Admins India Connect 2026</b><br>The 4 C's · Curiosity · Command · Code · Community</div>
+  </section>
+</div>
+
+<script>
+/* ---------- CONFIG ---------- */
+/* Points at the Starter Kit PDF. On the hosted site this resolves to /assets/…;
+   change it to a full URL if you host the kit elsewhere. */
+const KIT_URL="assets/MAIC2026-Mac-Admin-Starter-Kit.pdf";
+let NAME="", muted=false;
+
+/* ---------- DATA ---------- */
+const MYTHS=[
+ {q:"You need to be a hardcore coder before you can call yourself a real Mac Admin.",
+  ans:false,exp:"Nope. Great admins start by being curious and owning the fundamentals. Code grows one small script at a time — nobody starts fluent.",cc:"Curiosity + Code"},
+ {q:"Macs don't really get malware, so security isn't a Mac Admin's problem.",
+  ans:false,exp:"Myth. Macs are targeted too. Patching, encryption (FileVault), and compliance are core to the job — MDM is your security backbone.",cc:"Command"},
+ {q:"When something breaks in production, the fastest fix is to change it live and move on.",
+  ans:false,exp:"Risky. Test in a lab or a small pilot ring first. 'Move fast in prod' is how one Mac's problem becomes 500 Macs' problem.",cc:"Command + Curiosity"},
+ {q:"Asking the community for help makes you look junior.",
+  ans:false,exp:"The opposite. Senior admins ask questions every single day — that's literally why #macadminsindia exists. Sharing the answer helps the next person too.",cc:"Community"},
+ {q:"An MDM alone can do everything — you'll never need to script.",
+  ans:false,exp:"MDM does the heavy lifting, but scripts are how you extend it: custom reports, edge-case fixes, automations. MDM + a little code = superpowers.",cc:"Code + Command"}
+];
+const SCN=[
+ {q:"50 new MacBooks just landed. Onboarding is in 2 days.",sub:"What's your first move?",
+  opts:[{t:"Unbox and manually configure each one by hand",ok:false},
+        {t:"Set up zero-touch / Automated Device Enrollment so they configure themselves",ok:true},
+        {t:"Wait for users to raise tickets, then fix one by one",ok:false}],
+  exp:"Zero-touch enrollment (ADE + your MDM) means a Mac sets itself up out of the box. This is the difference between a scalable admin and a burnt-out one.",cc:"Command + Code"},
+ {q:"“My Mac is slow.” That's the whole ticket.",sub:"How do you respond?",
+  opts:[{t:"Reimage the machine immediately to be safe",ok:false},
+        {t:"Ask targeted questions, then check logs & resource usage methodically",ok:true},
+        {t:"Reply “try restarting” and close the ticket",ok:false}],
+  exp:"Methodical troubleshooting beats guessing. Narrow the problem before you touch anything — reimaging first destroys the evidence and the user's trust.",cc:"Command + Curiosity"},
+ {q:"You hit a cryptic error you've never seen. Deadline in 1 hour.",sub:"Your play?",
+  opts:[{t:"Randomly try fixes and hope one sticks",ok:false},
+        {t:"Search the MacAdmins Slack + docs, then ask #macadminsindia with details",ok:true},
+        {t:"Ignore it and hope it goes away",ok:false}],
+  exp:"Odds are someone already solved this. Search first, then ask well (error + what you tried). The community is your fastest debugger.",cc:"Community + Curiosity"},
+ {q:"You do the same 20-minute manual task 5 times a day.",sub:"What now?",
+  opts:[{t:"Keep doing it — it's only 20 minutes",ok:false},
+        {t:"Write a script/policy once so it runs itself",ok:true},
+        {t:"Ask a teammate to share the load",ok:false}],
+  exp:"That's ~8 hours a week. Automating it once pays you back forever. 'If you do it twice, script it' is the admin's golden rule.",cc:"Code"}
+];
+const CS=[
+ {key:"Curiosity",em:"🧭",sub:"Learning mindset & problem-solving"},
+ {key:"Command",em:"⚙️",sub:"Mac fundamentals, MDM & security"},
+ {key:"Code",em:"⌨️",sub:"Scripting & automation"},
+ {key:"Community",em:"🤝",sub:"Network, mentors & sharing"}
+];
+const STEPS={
+ Curiosity:[["Build a home lab","Grab a spare Mac or a VM and break things safely — it's the #1 way admins level up."],
+            ["Follow the changelog","Skim the Apple release notes & MacAdmins newsletter weekly so nothing surprises you."]],
+ Command:[["Learn one MDM deeply","Pick your MDM (Jamf, etc.) and master enrollment, profiles & policies end-to-end."],
+          ["Own the security basics","FileVault, patching, and a compliance baseline — make these second nature."]],
+ Code:[["Automate your #1 repetitive task","Turn your most-repeated manual job into a script or policy this month."],
+       ["Learn shell + a little Python","Start with bash/zsh; add Python when you need more. Small wins compound fast."]],
+ Community:[["Join #macadminsindia today","Introduce yourself in the MacAdmins Slack — ask your first question this week."],
+            ["Find a mentor (or become one)","Sign up for the Mac Admins India mentorship program — both sides grow."]]
+};
+const ARCH=[
+ {min:85,em:"🏆",name:"The Trusted Admin",desc:"You've got the mindset and the muscle. Now go multiply yourself — mentor someone and share what you know."},
+ {min:65,em:"🚀",name:"The Rising Builder",desc:"Strong foundation and real momentum. Double down on automation and community to break into senior territory."},
+ {min:45,em:"🌱",name:"The Curious Climber",desc:"You're asking the right questions. Pick one C to deepen this quarter and the rest will follow."},
+ {min:0, em:"🧭",name:"The Fresh Explorer",desc:"Everyone starts here — including every admin in this room. Your superpower is that you showed up. Let's build."}
+];
+
+/* ---------- STATE ---------- */
+let mi=0, ci=0;
+const scores={Curiosity:0,Command:0,Code:0,Community:0};
+const rating={Curiosity:0,Command:0,Code:0,Community:0};
+const SCREENS=["welcome","myth","scn","rate","result"];
+function setBar(){const idx=SCREENS.indexOf(cur);document.getElementById("bar").style.width=(idx/(SCREENS.length-1)*100)+"%";}
+let cur="welcome";
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("s-"+id).classList.add("active");cur=id;setBar();window.scrollTo(0,0);
+  if(id==="myth")renderMyth();if(id==="scn")renderScn();if(id==="rate")renderRate();if(id==="result")renderResult();}
+
+/* ---------- MYTHS ---------- */
+function renderMyth(){
+  const m=MYTHS[mi];
+  document.getElementById("m-count").textContent=`Myth ${mi+1} of ${MYTHS.length}`;
+  document.getElementById("m-q").textContent=m.q;
+  const box=document.getElementById("m-opts");box.innerHTML="";
+  [["Myth 🚫",false],["Legit ✅",true]].forEach(([label,val],i)=>{
+    const b=document.createElement("button");b.className="opt";
+    b.innerHTML=`<span class="k">${i?"B":"A"}</span><span>${label}</span>`;
+    b.onclick=()=>answerMyth(val,b);box.appendChild(b);
+  });
+  document.getElementById("m-reveal").classList.remove("show");
+  document.getElementById("m-next").style.display="none";
+  document.getElementById("m-next").textContent = mi<MYTHS.length-1 ? "Next myth →" : "On to the scenarios →";
+}
+function answerMyth(val,btn){
+  const m=MYTHS[mi];const opts=document.getElementById("m-opts").children;
+  [...opts].forEach(o=>{o.disabled=true;o.classList.add("dim");});
+  const correct = val===m.ans;
+  btn.classList.remove("dim");btn.classList.add(correct?"correct":"wrong");
+  // highlight the right one
+  const rightBtn = m.ans? opts[1]:opts[0];rightBtn.classList.remove("dim");rightBtn.classList.add("correct");
+  if(correct)bump(m.cc);
+  sfx(correct?"correct":"wrong");
+  const rv=document.getElementById("m-reveal");
+  document.getElementById("m-verdict").innerHTML = (correct?"✅ Nailed it":"💡 Gotcha")+` — this is a <span style="color:${m.ans?'var(--good)':'var(--bad)'}">${m.ans?'true':'myth'}</span>`;
+  document.getElementById("m-exp").textContent=m.exp;
+  document.getElementById("m-cc").textContent="Builds: "+m.cc;
+  rv.classList.add("show");
+  document.getElementById("m-next").style.display="block";
+}
+function nextMyth(){mi++;if(mi<MYTHS.length){renderMyth();window.scrollTo(0,0);}else{go("scn");}}
+
+/* ---------- SCENARIOS ---------- */
+function renderScn(){
+  const s=SCN[ci];
+  document.getElementById("c-count").textContent=`Scenario ${ci+1} of ${SCN.length}`;
+  document.getElementById("c-q").textContent=s.q;
+  document.getElementById("c-sub").textContent=s.sub;
+  const box=document.getElementById("c-opts");box.innerHTML="";
+  s.opts.forEach((o,i)=>{
+    const b=document.createElement("button");b.className="opt";
+    b.innerHTML=`<span class="k">${"ABC"[i]}</span><span>${o.t}</span>`;
+    b.onclick=()=>answerScn(o,b,box);box.appendChild(b);
+  });
+  document.getElementById("c-reveal").classList.remove("show");
+  document.getElementById("c-next").style.display="none";
+  document.getElementById("c-next").textContent = ci<SCN.length-1 ? "Next scenario →" : "Almost done →";
+}
+function answerScn(o,btn,box){
+  const s=SCN[ci];const opts=box.children;
+  [...opts].forEach((b,i)=>{b.disabled=true;b.classList.add("dim");if(s.opts[i].ok){b.classList.remove("dim");b.classList.add("correct");}});
+  if(!o.ok){btn.classList.remove("dim");btn.classList.add("wrong");}
+  if(o.ok)bump(s.cc);
+  sfx(o.ok?"correct":"wrong");
+  const rv=document.getElementById("c-reveal");
+  document.getElementById("c-verdict").innerHTML = o.ok? "✅ Smart call" : "🤔 There's a better move";
+  document.getElementById("c-exp").textContent=s.exp;
+  document.getElementById("c-cc").textContent="Builds: "+s.cc;
+  rv.classList.add("show");
+  document.getElementById("c-next").style.display="block";
+}
+function nextScn(){ci++;if(ci<SCN.length){renderScn();window.scrollTo(0,0);}else{go("rate");}}
+
+function bump(cc){cc.split("+").forEach(c=>{const k=c.trim();if(scores[k]!==undefined)scores[k]++;});}
+
+/* ---------- SELF RATING ---------- */
+function renderRate(){
+  const list=document.getElementById("rate-list");list.innerHTML="";
+  CS.forEach(c=>{
+    const wrap=document.createElement("div");wrap.className="rate";
+    wrap.innerHTML=`<div class="rh"><div class="dot" style="background:linear-gradient(135deg,var(--purple-2),var(--magenta))">${c.em}</div><div><b>${c.key}</b><span>${c.sub}</span></div></div>`;
+    const stars=document.createElement("div");stars.className="stars";
+    for(let i=1;i<=5;i++){const st=document.createElement("div");st.className="star";st.textContent="★";
+      st.onclick=()=>{rating[c.key]=i;[...stars.children].forEach((s,idx)=>s.classList.toggle("on",idx<i));checkRate();};
+      stars.appendChild(st);}
+    wrap.appendChild(stars);list.appendChild(wrap);
+  });
+}
+function checkRate(){document.getElementById("rate-go").disabled = Object.values(rating).some(v=>v===0);}
+
+/* ---------- RESULTS ---------- */
+const CMAX={Curiosity:4,Command:5,Code:4,Community:2}; // max quiz points per C (matches MYTHS+SCN 'builds')
+function finish(){go("result");}
+function renderResult(){
+  // combine quiz (0-100 scaled) with self-rating (1-5 -> 0-100)
+  const perC={};let total=0;
+  CS.forEach(c=>{
+    const quizPct = CMAX[c.key]? (scores[c.key]/CMAX[c.key]) : 0;   // 0..1
+    const ratePct = rating[c.key]/5;                               // 0..1
+    const v=Math.round((quizPct*0.5 + ratePct*0.5)*100);
+    perC[c.key]=v;total+=v;
+  });
+  const overall=Math.round(total/CS.length);
+  // ring
+  const ring=document.getElementById("ring");const circ=415;
+  setTimeout(()=>{ring.style.transition="stroke-dashoffset 1.1s cubic-bezier(.3,.8,.3,1)";ring.style.strokeDashoffset=circ*(1-overall/100);},120);
+  animateNum(document.getElementById("score"),overall);
+  // archetype
+  const a=ARCH.find(x=>overall>=x.min);
+  document.getElementById("a-em").textContent=a.em;
+  document.getElementById("a-name").textContent=a.name;
+  document.getElementById("a-desc").textContent=a.desc;
+  // bars
+  const cb=document.getElementById("cbars");cb.innerHTML="";
+  const cols={Curiosity:"linear-gradient(90deg,#3f6fe8,#5aa2ff)",Command:"linear-gradient(90deg,#1fb0d6,#35d0a5)",Code:"linear-gradient(90deg,#35d0a5,#f5c542)",Community:"linear-gradient(90deg,#f59042,#ec5f9e)"};
+  CS.forEach(c=>{
+    const d=document.createElement("div");d.className="cbar";
+    d.innerHTML=`<div class="lab"><span>${c.em} ${c.key}</span><span>${perC[c.key]}%</span></div><div class="track"><i style="background:${cols[c.key]}"></i></div>`;
+    cb.appendChild(d);
+    setTimeout(()=>d.querySelector("i").style.width=perC[c.key]+"%",200);
+  });
+  // steps: pick 2 lowest C's, take a step from each; fill to 3
+  const ranked=[...CS].sort((x,y)=>perC[x.key]-perC[y.key]);
+  const picks=[];
+  picks.push(STEPS[ranked[0].key][0]);
+  picks.push(STEPS[ranked[1].key][0]);
+  picks.push(STEPS[ranked[0].key][1]);
+  const sc=document.getElementById("steps");sc.innerHTML="";
+  picks.forEach((p,i)=>{const d=document.createElement("div");d.className="step";d.style.animationDelay=(i*.08)+"s";
+    d.innerHTML=`<div class="si">${i+1}</div><div><b>${p[0]}</b><p>${p[1]}</p></div>`;sc.appendChild(d);});
+  window._card={overall,perC,arch:a.name,em:a.em,name:NAME};
+  // personalize header + wire kit button + celebrate
+  document.getElementById("rHead").textContent = NAME ? `Nice work, ${NAME}! Here's your card` : "Your Mac Admin Readiness Card";
+  const kb=document.getElementById("kitBtn"); if(kb) kb.href=KIT_URL;
+  document.querySelector("#s-result .archetype").classList.add("pop-in");
+  setTimeout(()=>{ confetti(); sfx("win"); }, 650);
+}
+function animateNum(el,to){let n=0;const step=Math.max(1,Math.round(to/28));const t=setInterval(()=>{n+=step;if(n>=to){n=to;clearInterval(t);}el.textContent=n;},28);}
+function restart(){mi=0;ci=0;Object.keys(scores).forEach(k=>scores[k]=0);Object.keys(rating).forEach(k=>rating[k]=0);go("welcome");}
+/* ---------- START + SOUND ---------- */
+let AC=null;
+function initAudio(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==="suspended")AC.resume(); }catch(e){} }
+function tone(freq,start,dur,type="sine",vol=0.16){
+  if(!AC||muted)return; const t=AC.currentTime+start;
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+0.02);
+}
+function sfx(kind){
+  if(muted)return; initAudio();
+  if(kind==="correct"){tone(660,0,0.12,"triangle");tone(990,0.09,0.16,"triangle");}
+  else if(kind==="wrong"){tone(240,0,0.18,"sawtooth",0.10);}
+  else if(kind==="win"){[523,659,784,1047].forEach((f,i)=>tone(f,i*0.11,0.34,"triangle",0.15));}
+}
+function toggleMute(){ muted=!muted; document.getElementById("mute").textContent=muted?"🔇":"🔊"; if(!muted){initAudio();tone(880,0,0.1,"triangle");} }
+function startGame(){ NAME=(document.getElementById("pname").value||"").trim().slice(0,22); initAudio(); go("myth"); }
+
+/* ---------- CONFETTI ---------- */
+function confetti(){
+  const cv=document.getElementById("confetti"); if(!cv)return;
+  cv.style.display="block"; const x=cv.getContext("2d");
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const W=cv.width=innerWidth*dpr, H=cv.height=innerHeight*dpr;
+  const cols=["#4f7df0","#22c1dc","#35d0a5","#f5c542","#f59042","#ec5f9e","#a96be8"];
+  const N=140, P=[];
+  for(let i=0;i<N;i++)P.push({x:Math.random()*W,y:-20-Math.random()*H*0.3,
+    vx:(Math.random()-0.5)*6*dpr,vy:(2+Math.random()*4)*dpr,
+    s:(5+Math.random()*7)*dpr,rot:Math.random()*6,vr:(Math.random()-0.5)*0.3,
+    c:cols[i%cols.length]});
+  const t0=performance.now();
+  (function frame(t){
+    const el=t-t0; x.clearRect(0,0,W,H);
+    P.forEach(p=>{p.vy+=0.04*dpr;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+      x.save();x.translate(p.x,p.y);x.rotate(p.rot);x.fillStyle=p.c;
+      x.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);x.restore();});
+    if(el<2800)requestAnimationFrame(frame);
+    else{x.clearRect(0,0,W,H);cv.style.display="none";}
+  })(t0);
+}
+
+/* ---------- READINESS CARD IMAGE ---------- */
+function buildCardCanvas(){
+  const c=window._card||{overall:0,perC:{},arch:"",em:"🧭",name:""};
+  const W=1080,H=1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const x=cv.getContext("2d");
+  const FF='-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif';
+  let bg=x.createLinearGradient(0,0,W,H);bg.addColorStop(0,"#123a6b");bg.addColorStop(.5,"#0b1f45");bg.addColorStop(1,"#06101f");
+  x.fillStyle=bg;x.fillRect(0,0,W,H);
+  // glow
+  let gl=x.createRadialGradient(W*0.5,140,40,W*0.5,140,W*0.7);gl.addColorStop(0,"rgba(47,111,237,.35)");gl.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=gl;x.fillRect(0,0,W,H);
+  const stops=["#4f7df0","#22c1dc","#35d0a5","#f5c542","#f59042","#ec5f9e","#a96be8"];
+  const specGrad=(x0,y0,x1,y1)=>{const g=x.createLinearGradient(x0,y0,x1,y1);stops.forEach((c,i)=>g.addColorStop(i/(stops.length-1),c));return g;};
+  x.fillStyle=specGrad(0,0,W,0);x.fillRect(0,0,W,16);
+  x.textAlign="left";
+  x.fillStyle="#9db4d8";x.font=`700 30px ${FF}`;x.fillText("MAC ADMIN READINESS CARD",70,120);
+  // name
+  x.fillStyle=specGrad(70,0,760,0);x.font=`800 78px ${FF}`;
+  x.fillText((c.name||"Mac Admin"),70,215);
+  // archetype
+  x.font=`64px ${FF}`;x.fillText(c.em||"🧭",70,330);
+  x.fillStyle="#eaf1ff";x.font=`800 46px ${FF}`;x.fillText(c.arch||"",160,325);
+  // score ring
+  const cx=W/2,cy=560,r=145;
+  x.lineWidth=26;x.lineCap="round";
+  x.strokeStyle="rgba(255,255,255,.10)";x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();
+  const grad=x.createLinearGradient(cx-r,cy-r,cx+r,cy+r);grad.addColorStop(0,"#4f7df0");grad.addColorStop(.5,"#22c1dc");grad.addColorStop(1,"#ec5f9e");
+  x.strokeStyle=grad;x.beginPath();x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*(c.overall/100));x.stroke();
+  x.textAlign="center";x.fillStyle="#ffffff";x.font=`800 132px ${FF}`;x.fillText(c.overall,cx,cy+30);
+  x.fillStyle="#9db4d8";x.font=`700 26px ${FF}`;x.fillText("READINESS",cx,cy+80);
+  // 4C bars
+  const order=["Curiosity","Command","Code","Community"];
+  const emj={Curiosity:"🧭",Command:"⚙️",Code:"⌨️",Community:"🤝"};
+  const barCols={Curiosity:["#3f6fe8","#5aa2ff"],Command:["#1fb0d6","#35d0a5"],Code:["#35d0a5","#f5c542"],Community:["#f59042","#ec5f9e"]};
+  let by=830;x.textAlign="left";
+  order.forEach(k=>{
+    const v=c.perC[k]||0;
+    x.fillStyle="#eaf1ff";x.font=`700 32px ${FF}`;x.fillText(`${emj[k]}  ${k}`,70,by-14);
+    x.textAlign="right";x.fillStyle="#9db4d8";x.font=`700 30px ${FF}`;x.fillText(v+"%",W-70,by-14);x.textAlign="left";
+    x.fillStyle="rgba(255,255,255,.09)";roundRect(x,70,by,W-140,22,11);x.fill();
+    const bg2=x.createLinearGradient(70,0,W-70,0);bg2.addColorStop(0,barCols[k][0]);bg2.addColorStop(1,barCols[k][1]);
+    x.fillStyle=bg2;roundRect(x,70,by,Math.max(22,(W-140)*v/100),22,11);x.fill();
+    by+=92;
+  });
+  // footer
+  x.textAlign="center";x.fillStyle=specGrad(W*0.2,0,W*0.8,0);x.font=`800 30px ${FF}`;
+  x.fillText("Curiosity · Command · Code · Community",W/2,1250);
+  x.fillStyle="#9db4d8";x.font=`700 24px ${FF}`;x.fillText("Mac Admins India Connect 2026  ·  #MAIC2026",W/2,1295);
+  return cv;
+}
+function roundRect(x,rx,ry,w,h,r){x.beginPath();x.moveTo(rx+r,ry);x.arcTo(rx+w,ry,rx+w,ry+h,r);x.arcTo(rx+w,ry+h,rx,ry+h,r);x.arcTo(rx,ry+h,rx,ry,r);x.arcTo(rx,ry,rx+w,ry,r);x.closePath();}
+function downloadCard(){
+  const cv=buildCardCanvas();
+  cv.toBlob(b=>{const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download="mac-admin-readiness-card.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);sfx("correct");},"image/png");
+}
+function shareCard(){
+  const c=window._card||{};
+  const txt=`I'm "${c.arch}" — ${c.overall}% Mac Admin Readiness! 🧭⚙️⌨️🤝  #MAIC2026 @Mac Admins India`;
+  const cv=buildCardCanvas();
+  cv.toBlob(async b=>{
+    const file=new File([b],"mac-admin-readiness-card.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],text:txt});return;}catch(e){}
+    }
+    if(navigator.share){try{await navigator.share({title:"My Mac Admin Readiness Card",text:txt});return;}catch(e){}}
+    downloadCard();
+  },"image/png");
+}
+setBar();
+</script>
+</body>
+</html>

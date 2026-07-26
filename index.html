@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123a6b">
+<title>The Mac Admin Starter Kit · MAIC 2026</title>
+<meta name="description" content="A beginner's launchpad from Mac Admins India Connect 2026 — the interactive challenge, the Starter Kit ebook, and a curated community resource directory.">
+<style>
+  :root{
+    --blue:#2f6fed;--accent:#5aa2ff;--cyan:#22c1dc;--navy:#081226;--card:#122a50;--card2:#16305c;
+    --ink:#eaf1ff;--muted:#9db4d8;--line:rgba(255,255,255,.12);--gold:#f5c542;
+    --spectrum:linear-gradient(90deg,#4f7df0,#22c1dc,#35d0a5,#f5c542,#f59042,#ec5f9e,#a96be8);
+    --blue-grad:linear-gradient(135deg,#2f6fed,#22c1dc);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(130% 80% at 50% -10%,#17468c 0%,#0d2650 45%,#060f24 100%) fixed;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body::before{content:"";position:fixed;top:0;left:0;right:0;height:5px;background:var(--spectrum);z-index:100}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  a{color:inherit}
+  /* header */
+  header{padding:64px 0 30px;text-align:center}
+  .eyebrow{font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:14px}
+  h1{font-size:clamp(38px,7vw,72px);line-height:1.02;margin:0 0 8px;font-weight:850;letter-spacing:-1px}
+  h1 .spec{background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .lede{max-width:680px;margin:16px auto 0;color:var(--muted);font-size:18px}
+  .ctas{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:30px 0 6px}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:0;border-radius:14px;padding:15px 22px;font-size:16px;font-weight:800;text-decoration:none;cursor:pointer;transition:transform .12s,box-shadow .2s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--spectrum);color:#0b1226;box-shadow:0 10px 28px rgba(47,111,237,.4)}
+  .btn.solid{background:var(--blue-grad);color:#fff;box-shadow:0 10px 28px rgba(47,111,237,.35)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .hint{color:var(--muted);font-size:13px;margin-top:12px}
+  /* 4 C strip */
+  .cs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:44px 0 10px}
+  .c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .c b{display:block;font-size:16px;margin-bottom:3px}
+  .c span{font-size:13px;color:var(--muted)}
+  /* section */
+  .sec-title{margin:56px 0 6px;font-size:13px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;color:var(--accent)}
+  .sec-sub{color:var(--muted);margin:0 0 8px;font-size:15px}
+  /* resource cats */
+  .cat{margin:34px 0}
+  .cat-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+  .cat-ic{flex:0 0 46px;height:46px;border-radius:13px;background:var(--blue-grad);display:grid;place-items:center;font-size:22px;box-shadow:0 6px 16px rgba(47,111,237,.35)}
+  .cat-head h3{margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px}
+  .cat-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
+  .res-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .res{position:relative;display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;text-decoration:none;transition:.16s}
+  .res:hover{border-color:var(--accent);transform:translateY(-2px);background:var(--card2)}
+  .res-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding-right:20px}
+  .res-name{font-weight:800;font-size:15px;color:var(--ink)}
+  .res-by{font-size:12px;font-weight:700;color:var(--accent)}
+  .res-note{color:var(--muted);font-size:13px;margin-top:4px;padding-right:14px}
+  .res-go{position:absolute;top:13px;right:14px;color:var(--muted);font-size:15px;transition:.16s}
+  .res:hover .res-go{color:var(--accent)}
+  /* community band */
+  .band{background:linear-gradient(135deg,rgba(47,111,237,.16),rgba(34,193,220,.10));border:1px solid rgba(90,162,255,.35);border-radius:20px;padding:30px;margin:50px 0 20px}
+  .band h2{margin:0 0 6px;font-size:26px}
+  .band p{color:var(--muted);margin:0 0 18px}
+  .band-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  /* footer */
+  footer{text-align:center;color:var(--muted);padding:40px 0 60px;font-size:14px;border-top:1px solid var(--line);margin-top:30px}
+  footer .tag{font-weight:800;color:var(--accent)}
+  @media(max-width:720px){
+    .cs{grid-template-columns:repeat(2,1fr)}
+    .res-grid,.band-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Mac Admins India Connect 2026 · Engage · Empower · Elevate</div>
+      <h1>The Mac Admin<br><span class="spec">Starter Kit</span></h1>
+      <p class="lede">A beginner's launchpad, built by the community, for the community. Play the challenge, grab the kit, and dive into the resources that made us better admins.</p>
+      <div class="ctas">
+        <a class="btn primary" href="challenge.html">🎮 Play the Challenge</a>
+        <a class="btn solid" href="assets/MAIC2026-Mac-Admin-Starter-Kit.pdf" target="_blank">🎁 Download the Starter Kit (PDF)</a>
+        <a class="btn ghost" href="assets/MAIC2026-Mac-Admin-Field-Guide.pdf" target="_blank">📄 Field Guide</a>
+      </div>
+      <div class="hint">No login. Works on your phone. Everything here is free and community-curated.</div>
+      <div class="cs">
+        <div class="c"><b>🧭 Curiosity</b><span>Stay a learner</span></div>
+        <div class="c"><b>⚙️ Command</b><span>Own the fundamentals</span></div>
+        <div class="c"><b>⌨️ Code</b><span>Automate yourself</span></div>
+        <div class="c"><b>🤝 Community</b><span>Never go it alone</span></div>
+      </div>
+    </header>
+
+    <div class="sec-title">The resource directory</div>
+    <p class="sec-sub">Where to start — and where to go deep. Merged from Mac Admins India and the community's favourite lists. New here? Begin with <b style="color:var(--ink)">Start here — communities</b>, then the <b style="color:var(--ink)">master resource lists</b>.</p>
+    
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">🤝</span>
+          <div><h3>Start here — communities</h3><p>If you only bookmark one section, make it this one. These are the people who will unblock you.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://www.macadmins.org/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins Slack</span></div>
+          <div class="res-note">40k+ admins, a channel for everything. Join #macadminsindia first.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macadmins.in/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins India</span></div>
+          <div class="res-note">Your local community — Telegram, monthly huddles &amp; tech sessions.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://community.jamf.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Nation (Jamf Community)</span></div>
+          <div class="res-note">Jamf's own Q&amp;A community, guides and product forums.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macadmins-eu.org/community/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins Europe</span></div>
+          <div class="res-note">For the community, by the community — a European event archive.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.macadmins.org/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins Foundation</span></div>
+          <div class="res-note">The non-profit behind the Slack, the podcast and much more.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.reddit.com/r/macsysadmin/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">r/macsysadmin</span></div>
+          <div class="res-note">Reddit's Mac systems-admin community.</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">🗂️</span>
+          <div><h3>Master resource lists</h3><p>Curated, community-maintained directories. When you don't know where to look, look here.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://github.com/smashism/awesome-macadmin-tools" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Awesome Mac Admin Tools</span><span class="res-by">smashism</span></div>
+          <div class="res-note">The community's big curated list of tools. PRs welcome.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/maccy10/definitivemacadmins" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">The Definitive MacAdmins Resource Directory</span><span class="res-by">Mark Mahabir</span></div>
+          <div class="res-note">A living, all-in-one directory of Mac admin resources.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/TechseriesBNX/Navigating-Apple" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Navigating Apple</span><span class="res-by">Apple Benelux SE team</span></div>
+          <div class="res-note">An extensive bookmark set covering everything Apple.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://community.jamf.com/tech-thoughts-180/community-is-valuable-a-list-of-my-favorite-community-resources-53430" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Community is Valuable (the inspiration)</span><span class="res-by">Jordy Théry</span></div>
+          <div class="res-note">The Jamf Nation post this directory grew from.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://stream.lib.utah.edu/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">University of Utah MacAdmins streams</span></div>
+          <div class="res-note">20+ years of Mac admin talks, slides and audio.</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">✍️</span>
+          <div><h3>News, blogs &amp; the people behind them</h3><p>Follow a few of these and you'll absorb the craft almost by osmosis.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://www.jamf.com/blog/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Blog</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">News and how-tos across the Jamf world.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macadmins.news/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins News</span><span class="res-by">Armin Briegel</span></div>
+          <div class="res-note">The weekly newsletter that keeps you current.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://scriptingosx.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Scripting OS X</span><span class="res-by">Armin Briegel</span></div>
+          <div class="res-note">The go-to for shell scripting &amp; macOS (creator of Installomator).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://derflounder.wordpress.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Der Flounder</span><span class="res-by">Rich Trouton</span></div>
+          <div class="res-note">Deep, reliable how-tos on packaging, security and more.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://mrmacintosh.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mr. Macintosh</span></div>
+          <div class="res-note">Release news, update tracking and rescue guides (incl. DFU).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://krypted.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Krypted</span><span class="res-by">Charles Edge (in memoriam)</span></div>
+          <div class="res-note">A cornerstone of the community. Thank you, for everything.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://snelson.us/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Snelson.us</span><span class="res-by">Dan K. Snelson</span></div>
+          <div class="res-note">Home of Setup-Your-Mac and great enrollment write-ups.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://travellingtechguy.blog/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Travelling Tech Guy</span><span class="res-by">Frederik Abeloos</span></div>
+          <div class="res-note">Sharp technical articles, especially on Jamf Connect.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.motionbug.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Motionbug</span><span class="res-by">Rob Potvin</span></div>
+          <div class="res-note">Practical Jamf &amp; Apple management, incl. VMs.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.modtitan.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Modtitan</span><span class="res-by">Emily Kausalik</span></div>
+          <div class="res-note">Mac management insight from a Foundation co-founder.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://grahamrpugh.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Graham R Pugh</span></div>
+          <div class="res-note">Creator of Erase-install, used worldwide to (re)install macOS.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macmule.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">MacMule</span><span class="res-by">Ben Toms</span></div>
+          <div class="res-note">Loads of well-loved, battle-tested topics.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://appleshare.it/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">AppleShareIT</span><span class="res-by">Mischa van der Bent</span></div>
+          <div class="res-note">Scripts &amp; tips — home of SetDock and much more.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://boberito.medium.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Boberito</span><span class="res-by">Bob Gendler</span></div>
+          <div class="res-note">Security deep-dives; contributor to the mSCP project.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.rocketman.tech/blog" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Rocketman.tech blog</span></div>
+          <div class="res-note">Apple-only MSP; hosts the LaunchPad user group (US).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://hcsonline.com/support/white-papers" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">HCS Technology Group white papers</span></div>
+          <div class="res-note">Extensive setup write-ups (great for DEPNotify &amp; more).</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">🎓</span>
+          <div><h3>Learn &amp; get certified</h3><p>Structured ways to turn curiosity into real skill.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://support.apple.com/guide/deployment/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Apple Platform Deployment</span><span class="res-by">Apple</span></div>
+          <div class="res-note">The official source of truth for deploying Apple devices.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://trainingcatalog.jamf.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Training &amp; Certification</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Jamf 100 / 170 / 200 / 300 / 400 — build (and badge) real skills.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://concepts.jamf.com/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Concepts</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Solutions &amp; plug-ins for the Jamf ecosystem, built by Jamfs.</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">⌨️</span>
+          <div><h3>Essential tools &amp; open source</h3><p>The projects seasoned admins reach for again and again.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://github.com/swiftDialog/swiftDialog" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">swiftDialog</span><span class="res-by">Bart Reardon</span></div>
+          <div class="res-note">Beautiful custom dialogs, messages and input forms.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/Installomator/Installomator" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Installomator</span><span class="res-by">Armin Briegel</span></div>
+          <div class="res-note">Install &amp; patch apps by label — a Mac admin staple.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/App-Auto-Patch/App-Auto-Patch" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">App Auto-Patch</span><span class="res-by">Robert Schroeder</span></div>
+          <div class="res-note">Uses Installomator to keep all apps up to date.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/macadmins/nudge" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Nudge</span><span class="res-by">Erik Gomez</span></div>
+          <div class="res-note">Strongly encourages users to run macOS updates.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/Macjutsu/super" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">S.U.P.E.R.M.A.N. (super)</span><span class="res-by">Kevin M. White</span></div>
+          <div class="res-note">Optimises the whole macOS update experience.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/munki/munki" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Munki</span><span class="res-by">Walt Disney Animation Studios</span></div>
+          <div class="res-note">Powerful software install/removal management for macOS.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/setup-your-mac/Setup-Your-Mac" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Setup-Your-Mac</span><span class="res-by">Dan K. Snelson</span></div>
+          <div class="res-note">A polished, guided enrollment experience.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/Jamf-Concepts/Setup-Manager" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Setup Manager</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Native enrollment-progress tool.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/macadmins/escrow-buddy" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Escrow Buddy</span><span class="res-by">Netflix</span></div>
+          <div class="res-note">Generates &amp; escrows FileVault recovery keys via MDM.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/usnistgov/macos_security" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">macOS Security Compliance Project</span><span class="res-by">NIST + community</span></div>
+          <div class="res-note">Baselines to harden and audit macOS.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/Jamf-Concepts/jamf-compliance-editor" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf Compliance Editor</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Build mSCP baselines straight into Jamf.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/txhaflaire/JamfCheck" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">JamfCheck</span><span class="res-by">Thijs Xhaflaire</span></div>
+          <div class="res-note">Quick health checks for Jamf Pro, Connect &amp; Protect.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/root3nl/SupportApp" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Support App</span><span class="res-by">Root3</span></div>
+          <div class="res-note">A customisable macOS menu-bar support app.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/IBM/mac-ibm-notifications" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">IBM Notifier</span><span class="res-by">IBM</span></div>
+          <div class="res-note">Interactive popups and notification banners.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/cantscript/SchoolAssembly" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">SchoolAssembly</span><span class="res-by">Anthony Darlow</span></div>
+          <div class="res-note">App deployment/onboarding for Jamf School.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/erikstam/uninstaller" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Uninstaller</span><span class="res-by">Erik Stam</span></div>
+          <div class="res-note">Installomator in reverse — uninstall apps by recipe.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/scriptingosx/desktoppr" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Desktoppr</span><span class="res-by">Armin Briegel</span></div>
+          <div class="res-note">Set the desktop wallpaper from a script.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/kcrawford/dockutil" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Dockutil</span><span class="res-by">Kyle Crawford</span></div>
+          <div class="res-note">Manage the macOS Dock from scripts.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/twocanoes/xcreds" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">XCreds</span><span class="res-by">Twocanoes</span></div>
+          <div class="res-note">Cloud-identity login for the Mac (a Jamf Connect alternative).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/grahampugh/erase-install" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Erase-install</span><span class="res-by">Graham Pugh</span></div>
+          <div class="res-note">Wipe, reinstall or upgrade macOS reliably.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/ninxsoft/Mist" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">MIST</span><span class="res-by">Ninxsoft</span></div>
+          <div class="res-note">Auto-download macOS firmwares &amp; installers (great for VMs).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/scriptingosx/DownloadFullInstaller" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Download Full Installer</span><span class="res-by">Armin Briegel</span></div>
+          <div class="res-note">Fetch full macOS installer pkgs from a simple UI.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://mac.getutm.app/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">UTM</span><span class="res-by">utmapp</span></div>
+          <div class="res-note">Run macOS/Windows/Linux VMs on your Mac — perfect for a lab.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/TuringSoftware/CrystalFetch" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Crystal Fetch</span><span class="res-by">Turing Software</span></div>
+          <div class="res-note">Build a Windows installer ISO for VMs.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://github.com/jamf/PPPC-Utility" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf PPPC Utility</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Drag-and-drop builder for PPPC/privacy profiles.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://imazing.com/profile-editor" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">iMazing Profile Editor</span><span class="res-by">DigiDNA</span></div>
+          <div class="res-note">Visually author configuration profiles.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://addigy.com/mdm-watchdog/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">MDM Watchdog</span><span class="res-by">Addigy</span></div>
+          <div class="res-note">Surfaces MDM connectivity problems — any MDM.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://twocanoes.com/products/mac/dfu-blaster/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">DFU Blaster</span><span class="res-by">Twocanoes</span></div>
+          <div class="res-note">One-click DFU mode + restore any supported macOS.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://mothersruin.com/software/SuspiciousPackage/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Suspicious Package / Apparency</span><span class="res-by">Mothers Ruin Software</span></div>
+          <div class="res-note">Inspect installer packages and app bundles.</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+      <section class="cat">
+        <div class="cat-head"><span class="cat-ic">🎤</span>
+          <div><h3>Conferences &amp; podcasts</h3><p>Where the community gathers, learns and laughs together.</p></div>
+        </div>
+        <div class="res-grid">
+        <a class="res" href="https://conference.macadmins.in/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins India Connect (MAIC)</span></div>
+          <div class="res-note">The community's flagship India event — you're here!</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.jamf.com/events/jamf-nation-user-conference/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">JNUC (Jamf Nation User Conference)</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">The big annual Jamf gathering (US).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macadmins.psu.edu/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Penn State MacAdmins</span></div>
+          <div class="res-note">Long-running community conference; many talks online (US).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macsysadmin.se/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">MacSysAdmin</span></div>
+          <div class="res-note">Respected Apple-admin conference (Sweden, EU).</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://www.macad.uk/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">MacADUK</span></div>
+          <div class="res-note">The UK's Apple admin conference.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://macadmins-eu.org/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins Europe</span></div>
+          <div class="res-note">Community-driven European event.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://podcast.macadmins.org/" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Mac Admins Podcast</span><span class="res-by">MacAdmins Foundation</span></div>
+          <div class="res-note">Weekly conversations with the tool-builders.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://podcasts.apple.com/us/podcast/jamf-after-dark/id1434572611" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Jamf After Dark</span><span class="res-by">Jamf</span></div>
+          <div class="res-note">Jamf's own podcast.</div>
+          <span class="res-go">↗</span>
+        </a>
+        <a class="res" href="https://podcasts.apple.com/podcast/apple-work/id1500332802" target="_blank" rel="noopener">
+          <div class="res-h"><span class="res-name">Apple @ Work</span><span class="res-by">9to5Mac</span></div>
+          <div class="res-note">Enterprise Apple news &amp; interviews.</div>
+          <span class="res-go">↗</span>
+        </a></div>
+      </section>
+
+    <div class="band">
+      <h2>You are never alone.</h2>
+      <p>Plug in today — the fastest way to grow as a Mac Admin is to join the conversation.</p>
+      <div class="band-grid">
+        <a class="res" href="https://www.macadmins.org/" target="_blank" rel="noopener"><div class="res-h"><span class="res-name">💬 MacAdmins Slack — #macadminsindia</span></div><div class="res-note">40k+ admins worldwide · your 24/7 lifeline</div><span class="res-go">↗</span></a>
+        <a class="res" href="https://macadmins.in/join-us" target="_blank" rel="noopener"><div class="res-h"><span class="res-name">🇮🇳 Mac Admins India</span></div><div class="res-note">Telegram, monthly huddles & tech sessions</div><span class="res-go">↗</span></a>
+        <a class="res" href="https://macadmins.in/mentorship-program" target="_blank" rel="noopener"><div class="res-h"><span class="res-name">🎓 Mentorship Program</span></div><div class="res-note">Get paired with a senior admin — or become one</div><span class="res-go">↗</span></a>
+        <a class="res" href="https://www.youtube.com/@macadminsindia" target="_blank" rel="noopener"><div class="res-h"><span class="res-name">▶️ Mac Admins India on YouTube</span></div><div class="res-note">Recordings & past sessions</div><span class="res-go">↗</span></a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <div class="tag">Curiosity · Command · Code · Community</div>
+      <div style="margin-top:8px">Curated by Kavan Joshi &amp; Mischa · Mac Admins India Connect 2026</div>
+      <div style="margin-top:6px;font-size:12px;color:#5b7099">Engage · Empower · Elevate</div>
+    </div>
+  </footer>
+</body>
+</html>
