@@ -53,6 +53,10 @@
   .res-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding-right:20px}
   .res-name{font-weight:800;font-size:15px;color:var(--ink)}
   .res-by{font-size:12px;font-weight:700;color:var(--accent)}
+  .by-link{color:var(--accent);text-decoration:none}
+  .by-link:hover{text-decoration:underline}
+  .foot-link{color:var(--accent);text-decoration:none;font-weight:700}
+  .foot-link:hover{text-decoration:underline}
   .res-note{color:var(--muted);font-size:13px;margin-top:4px;padding-right:14px}
   .res-go{position:absolute;top:13px;right:14px;color:var(--muted);font-size:15px;transition:.16s}
   .res:hover .res-go{color:var(--accent)}
@@ -226,7 +230,7 @@
           <span class="res-go">↗</span>
         </a>
         <a class="res" href="https://appleshare.it/" target="_blank" rel="noopener">
-          <div class="res-h"><span class="res-name">AppleShareIT</span><span class="res-by">Mischa van der Bent</span></div>
+          <div class="res-h"><span class="res-name">AppleShareIT</span><span class="res-by"><a class="by-link" href="https://www.linkedin.com/in/mvdbent/" target="_blank" rel="noopener">Mischa van der Bent</a></span></div>
           <div class="res-note">Scripts &amp; tips — home of SetDock and much more.</div>
           <span class="res-go">↗</span>
         </a>
@@ -485,7 +489,7 @@
   <footer>
     <div class="wrap">
       <div class="tag">Curiosity · Command · Code · Community</div>
-      <div style="margin-top:8px">Curated by Kavan Joshi &amp; Mischa · Mac Admins India Connect 2026</div>
+      <div style="margin-top:8px">Curated by <a class="foot-link" href="https://www.linkedin.com/in/joshikavan92/" target="_blank" rel="noopener">Kavan Joshi</a> &amp; <a class="foot-link" href="https://www.linkedin.com/in/mvdbent/" target="_blank" rel="noopener">Mischa van der Bent</a> · Mac Admins India Connect 2026</div>
       <div style="margin-top:6px;font-size:12px;color:#5b7099">Engage · Empower · Elevate</div>
     </div>
   </footer>
