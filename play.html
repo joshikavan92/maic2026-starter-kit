@@ -92,7 +92,7 @@
 
   <!-- QUESTION -->
   <section class="screen" id="s-q">
-    <div class="qn" id="qn">Question 1</div>
+    <div class="qn" id="qn">Round 1 · Question 1</div>
     <span class="tag" id="qtag">Myth or Legit?</span>
     <h2 id="qprompt"></h2>
     <p id="qsub" style="margin:-2px 0 14px"></p>
@@ -113,7 +113,8 @@
   <section class="screen" id="s-end">
     <span class="eyebrow">That's a wrap!</span>
     <h1 id="endName">Nice work!</h1>
-    <div class="scorebox"><b id="endScore">0</b><span id="endOf">out of 6</span></div>
+    <div class="scorebox"><b id="endScore">0</b><span id="endOf">out of 15</span></div>
+    <div class="scorebox" id="rankbox" style="display:none"><b id="endRank">–</b><span id="endRankOf">rank</span></div>
     <p>Want your personal <b style="color:var(--ink)">Readiness Card</b> and the full Starter Kit? Play the self-paced version:</p>
     <div class="foot">
       <a class="btn ghost" href="challenge.html" style="margin-bottom:10px">🎮 Play the full challenge</a>
@@ -180,9 +181,15 @@ function render(){
   }
 }
 
+function roundLabel(idx){
+  const q=Q[idx]; const rn=q.round||1;
+  const inRound=Q.filter(x=>(x.round||1)===rn);
+  const rmeta=(window.LIVE_ROUNDS||[]).find(r=>r.n===rn);
+  return `Round ${rn}${rmeta?" · "+rmeta.name:""}  ·  Q${inRound.indexOf(q)+1}/${inRound.length}`;
+}
 function renderQuestion(idx){
   const q=Q[idx]; if(!q)return;
-  document.getElementById("qn").textContent=`Question ${idx+1} of ${N}`;
+  document.getElementById("qn").textContent=roundLabel(idx);
   document.getElementById("qtag").textContent=q.tag;
   document.getElementById("qprompt").textContent=q.prompt;
   const sub=document.getElementById("qsub"); sub.textContent=q.sub||""; sub.style.display=q.sub?"block":"none";
@@ -207,7 +214,7 @@ function answer(idx,choice,btn){
 
 function renderResult(idx, revealed, mine){
   const q=Q[idx];
-  document.getElementById("rqn").textContent=`Question ${idx+1} of ${N}`;
+  document.getElementById("rqn").textContent=roundLabel(idx);
   document.getElementById("rprompt").textContent=q.prompt;
   const badge=document.getElementById("resBadgeWrap");
   const opts=document.getElementById("ropts"); opts.innerHTML="";
@@ -247,10 +254,20 @@ function leaveGame(){
 }
 
 function renderEnd(){
-  room.child("players/"+pid+"/score").once("value",s=>{
-    const sc=s.val()||0;
+  room.child("players").once("value",s=>{
+    const all=s.val()||{};
+    const me=all[pid]||{}; const sc=me.score||0;
     document.getElementById("endName").textContent = (name?name+", ":"")+"nice work!";
     document.getElementById("endScore").textContent=sc;
+    // where did I land?
+    const rows=Object.keys(all).map(id=>({id,score:(all[id]||{}).score||0}))
+                 .sort((a,b)=>b.score-a.score);
+    const rank=rows.findIndex(r=>r.id===pid)+1;
+    if(rank>0 && rows.length>1){
+      document.getElementById("rankbox").style.display="block";
+      document.getElementById("endRank").textContent="#"+rank;
+      document.getElementById("endRankOf").textContent="of "+rows.length+" players"+(rank===1?" 🥇":rank===2?" 🥈":rank===3?" 🥉":"");
+    }
   });
 }
 </script>

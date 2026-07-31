@@ -92,6 +92,46 @@
     color:var(--ink);padding:13px 22px;border-radius:12px;font-size:15px;font-weight:700;z-index:200;opacity:0;
     transition:opacity .25s,transform .25s;pointer-events:none}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+  /* persistent join QR */
+  .joinmini{position:fixed;right:22px;bottom:22px;background:#fff;border-radius:16px;padding:12px;display:none;
+    align-items:center;gap:12px;box-shadow:0 12px 34px rgba(0,0,0,.45);z-index:90}
+  .joinmini.on{display:flex}
+  .joinmini-qr img,.joinmini-qr canvas{display:block;width:104px;height:104px}
+  .joinmini-txt{max-width:170px}
+  .joinmini-txt b{display:block;font-size:14px;color:#122a50;letter-spacing:.2px}
+  .joinmini-txt span{display:block;font-size:10.5px;color:#5b6a86;word-break:break-all;line-height:1.35;margin-top:3px}
+  /* round badge */
+  .roundbadge{font-size:14px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;padding:7px 15px;border-radius:99px;
+    background:var(--spectrum);color:#0b1226}
+  /* podium */
+  .podium{display:flex;gap:18px;align-items:flex-end;justify-content:center;margin:26px 0 6px;flex-wrap:wrap}
+  .pod{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 26px;text-align:center;min-width:210px;position:relative}
+  .pod .medal{font-size:40px;line-height:1}
+  .pod .nm{font-size:24px;font-weight:850;margin:8px 0 2px;word-break:break-word}
+  .pod .sc{font-size:15px;color:var(--muted);font-weight:700}
+  .pod.first{padding:32px 30px;border-color:var(--gold);background:linear-gradient(160deg,rgba(245,197,66,.16),rgba(18,42,80,.9))}
+  .pod.first .nm{font-size:30px}
+  .pod.first .medal{font-size:54px}
+  .pod.second{border-color:#9fb6d9}.pod.third{border-color:#c98b5a}
+  /* end columns */
+  .endcols{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;width:100%;margin-top:18px;text-align:left}
+  .blocktitle{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:12px}
+  .lbrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:10px 14px;margin-bottom:8px;position:relative;overflow:hidden}
+  .lbrow .lbfill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,rgba(47,111,237,.30),rgba(34,193,220,.16));z-index:0;transition:width .8s cubic-bezier(.3,.8,.3,1)}
+  .lbrow>*{position:relative;z-index:1}
+  .lbrow .rk{flex:0 0 30px;height:30px;border-radius:9px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-weight:850;font-size:14px;color:var(--muted)}
+  .lbrow.top .rk{background:var(--spectrum);color:#0b1226}
+  .lbrow .nm{flex:1;font-size:17px;font-weight:700}
+  .lbrow .sc{font-size:17px;font-weight:850;color:var(--ink)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .sbox b{display:block;font-size:30px;line-height:1.1;background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sbox span{display:block;font-size:12px;color:var(--muted);margin-top:5px;line-height:1.35}
+  .sbox.wide{grid-column:1 / -1}
+  .sbox.wide b{font-size:20px}
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150;display:none}
+  @media(max-width:900px){ .endcols{grid-template-columns:1fr} .joinmini{display:none!important} }
 </style>
 </head>
 <body>
@@ -131,9 +171,23 @@
     </div>
   </section>
 
+  <canvas id="confetti"></canvas>
+
+  <!-- persistent join QR (visible during play so latecomers can still join) -->
+  <div class="joinmini" id="joinmini">
+    <div class="joinmini-qr" id="qrmini"></div>
+    <div class="joinmini-txt"><b>Join anytime</b><span id="miniurl"></span></div>
+  </div>
+
   <!-- QUESTION -->
   <section class="view" id="question">
-    <div class="qhead"><span class="pill" id="qtag">Myth or Legit?</span><span class="qnum" id="qnum">Question 1</span></div>
+    <div class="qhead">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="roundbadge" id="roundbadge">Round 1</span>
+        <span class="pill" id="qtag">Myth or Legit?</span>
+      </div>
+      <span class="qnum" id="qnum">Question 1</span>
+    </div>
     <div class="qprompt" id="qprompt"></div>
     <div class="qsub" id="qsub"></div>
     <div class="bars" id="bars"></div>
@@ -149,13 +203,19 @@
   <!-- END -->
   <section class="view" id="end">
     <div class="eyebrow">That's a wrap</div>
-    <h1>You're all <span class="spec">Mac Admins</span> now 🎉</h1>
-    <div class="stats">
-      <div class="stat"><b id="endPlayers">0</b><span>players</span></div>
-      <div class="stat"><b id="endPerfect">0</b><span>perfect scores</span></div>
-      <div class="stat"><b id="endAns">0</b><span>answers submitted</span></div>
+    <h1>🏆 Our <span class="spec">Mac Admin champions</span></h1>
+    <div class="podium" id="podium"></div>
+    <div class="endcols">
+      <div class="lbwrap">
+        <div class="blocktitle">Leaderboard</div>
+        <div id="leaderboard"></div>
+      </div>
+      <div class="lbwrap">
+        <div class="blocktitle">Statistics</div>
+        <div class="statgrid" id="statgrid"></div>
+      </div>
     </div>
-    <p style="font-size:20px;color:var(--muted);max-width:640px">Everyone's personal Readiness Card is on their phone — remind them to tap <b style="color:var(--ink)">Download my card</b> and grab the Starter Kit.</p>
+    <p style="font-size:17px;color:var(--muted);max-width:760px;margin-top:20px">Everyone's personal Readiness Card is on their phone — remind them to tap <b style="color:var(--ink)">Download my card</b> and grab the Starter Kit.</p>
     <div class="startbar" style="justify-content:center"><button class="btn" onclick="resetGame()">↺ Play again</button></div>
   </section>
 
@@ -174,8 +234,28 @@ const N = Q.length;
 const baseUrl = location.href.split(/[?#]/)[0];
 const PLAYURL = baseUrl.substring(0, baseUrl.lastIndexOf("/")+1) + "play.html";
 
-document.getElementById("playurl").textContent = PLAYURL.replace(/^https?:\/\//,"");
-try{ new QRCode(document.getElementById("qrbox"), {text:PLAYURL, width:300, height:300, colorDark:"#123a7a", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.H}); }catch(e){}
+const SHORTURL = PLAYURL.replace(/^https?:\/\//,"");
+document.getElementById("playurl").textContent = SHORTURL;
+document.getElementById("miniurl").textContent = SHORTURL;
+
+/* Render a QR into an element. Uses the qrcodejs lib if it loaded (dynamic, always the right URL);
+   falls back to the pre-generated PNG shipped in assets/ if the CDN is blocked at the venue. */
+function makeQR(el, size){
+  if(!el) return;
+  el.innerHTML="";
+  try{
+    if(typeof QRCode!=="undefined"){
+      new QRCode(el,{text:PLAYURL,width:size,height:size,colorDark:"#123a7a",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+      return;
+    }
+  }catch(e){}
+  const img=document.createElement("img");
+  img.src="assets/qr-play.png"; img.alt="Join QR";
+  img.style.width=size+"px"; img.style.height=size+"px"; img.style.display="block";
+  el.appendChild(img);
+}
+makeQR(document.getElementById("qrbox"),300);
+makeQR(document.getElementById("qrmini"),104);
 
 let db, room, state={phase:"lobby",q:0,revealed:false}, players={}, answers={}, DEMO=false;
 
@@ -268,6 +348,8 @@ function render(){
   document.getElementById("pcount").textContent = pc;
   document.getElementById("startBtn").disabled = pc===0;
   const phase = state.phase||"lobby";
+  // keep the join QR on screen while playing so latecomers can still join
+  document.getElementById("joinmini").classList.toggle("on", phase==="question");
   if(phase==="lobby"){ show("lobby"); }
   else if(phase==="end"){ show("end"); renderEnd(pc); }
   else { show("question"); renderQuestion(state.q||0, !!state.revealed, pc); }
@@ -276,7 +358,13 @@ function render(){
 function renderQuestion(idx, revealed, pc){
   const q=Q[idx]; if(!q) return;
   document.getElementById("qtag").textContent=q.tag;
-  document.getElementById("qnum").textContent=`Question ${idx+1} of ${N}`;
+  // round context: "Round 2" + "Q3 of 5 · overall 8/15"
+  const rn=q.round||1;
+  const inRound=Q.filter(x=>(x.round||1)===rn);
+  const posInRound=inRound.indexOf(q)+1;
+  const rmeta=(window.LIVE_ROUNDS||[]).find(r=>r.n===rn);
+  document.getElementById("roundbadge").textContent = "Round "+rn+(rmeta?" · "+rmeta.name:"");
+  document.getElementById("qnum").textContent=`Q${posInRound} of ${inRound.length}  ·  overall ${idx+1}/${N}`;
   document.getElementById("qprompt").textContent=q.prompt;
   const sub=document.getElementById("qsub"); sub.textContent=q.sub||""; sub.style.display=q.sub?"block":"none";
   const aQ = answers[idx]||{};
@@ -301,17 +389,116 @@ function renderQuestion(idx, revealed, pc){
   document.getElementById("nextBtn").textContent = idx+1<N ? "Next →" : "Finish 🎉";
 }
 
+/* ---- leaderboard + statistics ---- */
+function standings(){
+  // score desc; tie-break: whoever answered faster overall (sum of timestamps)
+  const rows=Object.keys(players).map(id=>{
+    const p=players[id]||{};
+    let t=0,n=0;
+    Object.keys(answers).forEach(qi=>{ const a=answers[qi]&&answers[qi][id]; if(a){ t+=(a.ts||0); n++; } });
+    return {id, name:p.name||"Anon", score:p.score||0, answered:n, tsum:t};
+  });
+  rows.sort((a,b)=> b.score-a.score || a.tsum-b.tsum || a.name.localeCompare(b.name));
+  return rows;
+}
 function renderEnd(pc){
-  const scores=Object.values(players).map(p=>p&&p.score||0);
-  const perfect=scores.filter(s=>s>=N).length;
-  let totalAns=0; Object.values(answers).forEach(q=>totalAns+=Object.keys(q||{}).length);
-  document.getElementById("endPlayers").textContent=pc;
-  document.getElementById("endPerfect").textContent=perfect;
-  document.getElementById("endAns").textContent=totalAns;
+  const rows=standings();
+  const MEDALS=["🥇","🥈","🥉"], CLS=["first","second","third"];
+  // podium — order 2nd, 1st, 3rd so the winner sits centre
+  const pod=document.getElementById("podium"); pod.innerHTML="";
+  const top=rows.slice(0,3);
+  [1,0,2].forEach(i=>{
+    const r=top[i]; if(!r) return;
+    const el=document.createElement("div"); el.className="pod "+CLS[i];
+    el.innerHTML=`<div class="medal">${MEDALS[i]}</div><div class="nm">${escapeHtml(r.name)}</div>
+                  <div class="sc">${r.score} / ${N} correct</div>`;
+    pod.appendChild(el);
+  });
+  if(!top.length) pod.innerHTML='<div class="pod"><div class="medal">🙂</div><div class="nm">No players yet</div><div class="sc">Reset and try again</div></div>';
+
+  // leaderboard (top 10)
+  const lb=document.getElementById("leaderboard"); lb.innerHTML="";
+  rows.slice(0,10).forEach((r,i)=>{
+    const el=document.createElement("div"); el.className="lbrow"+(i<3?" top":"");
+    el.innerHTML=`<div class="lbfill"></div><div class="rk">${i+1}</div>
+      <div class="nm">${escapeHtml(r.name)}</div><div class="sc">${r.score}</div>`;
+    lb.appendChild(el);
+    setTimeout(()=>el.querySelector(".lbfill").style.width=Math.round((r.score/Math.max(1,N))*100)+"%",120+i*60);
+  });
+  if(rows.length>10){
+    const more=document.createElement("div");
+    more.style.cssText="font-size:13px;color:var(--muted);margin-top:6px";
+    more.textContent=`+ ${rows.length-10} more players`;
+    lb.appendChild(more);
+  }
+
+  // statistics
+  let totalAns=0, totalCorrect=0;
+  const perQ=Q.map((q,qi)=>{
+    const aq=answers[qi]||{}; const ids=Object.keys(aq);
+    const corr=ids.filter(id=>aq[id]&&aq[id].correct).length;
+    totalAns+=ids.length; totalCorrect+=corr;
+    return {qi, n:ids.length, corr, acc: ids.length? corr/ids.length : null};
+  });
+  const rated=perQ.filter(x=>x.acc!==null);
+  const toughest=rated.length? rated.reduce((a,b)=>b.acc<a.acc?b:a) : null;
+  const easiest =rated.length? rated.reduce((a,b)=>b.acc>a.acc?b:a) : null;
+  const accuracy= totalAns? Math.round(totalCorrect/totalAns*100) : 0;
+  const avg = rows.length? (rows.reduce((s,r)=>s+r.score,0)/rows.length) : 0;
+  const perfect = rows.filter(r=>r.score>=N).length;
+  // fastest finger: earliest correct answer on any question
+  let ff=null;
+  Object.keys(answers).forEach(qi=>{ const aq=answers[qi]||{};
+    Object.keys(aq).forEach(id=>{ const a=aq[id];
+      if(a&&a.correct&&a.ts&&(!ff||a.ts<ff.ts)) ff={ts:a.ts,name:(players[id]||{}).name||"Anon"}; });});
+
+  const sg=document.getElementById("statgrid");
+  const roundStats=(window.LIVE_ROUNDS||[]).map(r=>{
+    const idxs=Q.map((q,i)=>({q,i})).filter(x=>(x.q.round||1)===r.n).map(x=>x.i);
+    let n=0,c=0; idxs.forEach(i=>{ const aq=answers[i]||{}; const k=Object.keys(aq); n+=k.length; c+=k.filter(id=>aq[id].correct).length; });
+    return {name:r.name, acc: n? Math.round(c/n*100):0, n};
+  }).filter(r=>r.n>0);
+
+  sg.innerHTML =
+    `<div class="sbox"><b>${pc}</b><span>players joined</span></div>
+     <div class="sbox"><b>${accuracy}%</b><span>overall accuracy</span></div>
+     <div class="sbox"><b>${avg.toFixed(1)}</b><span>average score (of ${N})</span></div>
+     <div class="sbox"><b>${perfect}</b><span>perfect ${N}/${N} score${perfect===1?"":"s"}</span></div>
+     <div class="sbox wide"><b>${totalAns}</b><span>answers submitted across ${N} questions in 3 rounds</span></div>` +
+    (ff? `<div class="sbox wide"><b>⚡ ${escapeHtml(ff.name)}</b><span>fastest correct answer of the game</span></div>`:"") +
+    (toughest? `<div class="sbox wide"><b>🧠 Q${toughest.qi+1} — ${Math.round(toughest.acc*100)}% got it</b><span>toughest question: “${escapeHtml(Q[toughest.qi].prompt.slice(0,78))}${Q[toughest.qi].prompt.length>78?"…":""}”</span></div>`:"") +
+    (easiest && toughest && easiest.qi!==toughest.qi? `<div class="sbox wide"><b>✅ Q${easiest.qi+1} — ${Math.round(easiest.acc*100)}% got it</b><span>everyone's favourite: “${escapeHtml(Q[easiest.qi].prompt.slice(0,78))}${Q[easiest.qi].prompt.length>78?"…":""}”</span></div>`:"") +
+    roundStats.map(r=>`<div class="sbox"><b>${r.acc}%</b><span>${escapeHtml(r.name)}</span></div>`).join("");
+
+  if(!window._celebrated){ window._celebrated=true; setTimeout(confetti,300); }
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---- confetti for the winners screen ---- */
+function confetti(){
+  const cv=document.getElementById("confetti");
+  if(!cv || typeof cv.getContext!=="function") return;   // never let decoration break the results
+  cv.style.display="block"; const x=cv.getContext("2d");
+  if(!x) return;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const W=cv.width=innerWidth*dpr, H=cv.height=innerHeight*dpr;
+  const cols=["#4f7df0","#22c1dc","#35d0a5","#f5c542","#f59042","#ec5f9e","#a96be8"];
+  const P=[];
+  for(let i=0;i<180;i++)P.push({x:Math.random()*W,y:-20-Math.random()*H*0.4,
+    vx:(Math.random()-0.5)*6*dpr,vy:(2+Math.random()*4.5)*dpr,s:(6+Math.random()*8)*dpr,
+    rot:Math.random()*6,vr:(Math.random()-0.5)*0.3,c:cols[i%cols.length]});
+  const t0=performance.now();
+  (function frame(t){
+    const el=t-t0; x.clearRect(0,0,W,H);
+    P.forEach(p=>{p.vy+=0.045*dpr;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+      x.save();x.translate(p.x,p.y);x.rotate(p.rot);x.fillStyle=p.c;
+      x.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);x.restore();});
+    if(el<3400)requestAnimationFrame(frame); else{x.clearRect(0,0,W,H);cv.style.display="none";}
+  })(t0);
 }
 
 /* ---- host controls ---- */
-function startGame(){ putState({phase:"question",q:0,revealed:false,ts:Date.now()}); maybeAutoSim(); }
+function startGame(){ window._celebrated=false; putState({phase:"question",q:0,revealed:false,ts:Date.now()}); maybeAutoSim(); }
 function revealAns(){ patchState({revealed:true}); }
 function nextQ(){
   const i=state.q||0;

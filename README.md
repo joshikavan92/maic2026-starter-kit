@@ -89,11 +89,35 @@ Realtime Database** — you just paste a config, no server to run.
 
 Commit & push (or `./deploy.sh`). That's it — the live game is now wired.
 
+### The format — 3 rounds, 15 questions
+
+| Round | Name | Questions | Feel |
+|---|---|---|---|
+| 1 | **Myth or Legit?** | 5 | Fast binary warm-up (some are true — it's not all myths) |
+| 2 | **You're on call** | 5 | Real-world scenarios, 3 options each |
+| 3 | **Level up** | 5 | Tools, terms & commands for the craft |
+
+The host screen shows the round name and both positions (`Q3 of 5 · overall 8/15`), so the rounds
+give you natural stopping points. **Timing:** budget ~35–45 seconds per question including the
+reveal — that's roughly **10–12 minutes for all 15**. If you're tight on time in a 25-minute slot,
+finish after Round 2 and mention Round 3 is on their phones in the self-paced challenge.
+
+### Winners & statistics
+
+When you hit **Finish**, the screen celebrates with confetti and shows:
+
+- a **top-3 podium** with the winners' names (🥇 centre stage),
+- the **full leaderboard** (top 10, with score bars; ties broken by who answered faster),
+- **statistics**: players joined, overall accuracy, average score, perfect scores, total answers,
+  **⚡ fastest correct answer**, the **toughest question**, the easiest one, and accuracy per round.
+
 ### Running it at the event
 
 - **Big screen / projector:** open **`…/host.html`**. It shows a join QR + live player count.
   When people have joined, click **Start the game**, then **Reveal answer** and **Next →** to
   drive each question. Answer bars fill in real time as the room taps.
+- **The join QR stays on screen** (bottom-right) for the whole game, so latecomers can still join
+  mid-round — they just start from the current question.
 - **Audience:** they scan the QR (or open **`…/play.html`**), type a name, and answer each
   question on their phones. Their screen follows whatever you do on the host.
 ### Testing & resetting (rehearse before the room arrives) 🧪
