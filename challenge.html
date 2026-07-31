@@ -79,6 +79,10 @@
   .opt.wrong .k{background:var(--bad);color:#2a0007}
   .opt.dim{opacity:.5}
   .opt[disabled]{cursor:default}
+  .roundintro{display:none;background:linear-gradient(135deg,rgba(47,111,237,.20),rgba(34,193,220,.12));
+    border:1px solid rgba(90,162,255,.4);border-radius:13px;padding:12px 14px;margin:0 0 14px;
+    font-size:13.5px;color:#dce6fb;line-height:1.45;animation:pop .4s}
+  .roundintro.show{display:block}
   .reveal{background:var(--card-2);border:1px solid var(--line);border-left:4px solid var(--purple-2);border-radius:12px;padding:15px 16px;margin:4px 0 16px;animation:pop .35s;display:none}
   .reveal.show{display:block}
   .reveal .verdict{font-weight:850;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
@@ -170,31 +174,19 @@
     </div>
   </section>
 
-  <!-- MYTHS -->
-  <section class="screen" id="s-myth">
-    <div class="qmeta"><span class="n" id="m-count">Myth 1 of 5</span><span class="pill myth">Myth or Legit?</span></div>
-    <h2 id="m-q"></h2>
-    <div id="m-opts"></div>
-    <div class="reveal" id="m-reveal">
-      <div class="verdict" id="m-verdict"></div>
-      <p id="m-exp"></p>
-      <span class="cc" id="m-cc"></span>
+  <!-- QUESTIONS · 4 rounds, one per C -->
+  <section class="screen" id="s-q">
+    <div class="qmeta"><span class="n" id="q-count">Round 1 · Q1 of 4</span><span class="pill" id="q-pill">🧭 Curiosity</span></div>
+    <div class="roundintro" id="q-intro"></div>
+    <h2 id="q-q"></h2>
+    <p id="q-sub" style="margin-top:-4px"></p>
+    <div id="q-opts"></div>
+    <div class="reveal" id="q-reveal">
+      <div class="verdict" id="q-verdict"></div>
+      <p id="q-exp"></p>
+      <span class="cc" id="q-cc"></span>
     </div>
-    <div class="foot"><button class="btn" id="m-next" style="display:none" onclick="nextMyth()">Next →</button></div>
-  </section>
-
-  <!-- SCENARIOS -->
-  <section class="screen" id="s-scn">
-    <div class="qmeta"><span class="n" id="c-count">Scenario 1 of 4</span><span class="pill scn">You're on call</span></div>
-    <h2 id="c-q"></h2>
-    <p id="c-sub" style="margin-top:-4px"></p>
-    <div id="c-opts"></div>
-    <div class="reveal" id="c-reveal">
-      <div class="verdict" id="c-verdict"></div>
-      <p id="c-exp"></p>
-      <span class="cc" id="c-cc"></span>
-    </div>
-    <div class="foot"><button class="btn" id="c-next" style="display:none" onclick="nextScn()">Next →</button></div>
+    <div class="foot"><button class="btn" id="q-next" style="display:none" onclick="nextQ()">Next →</button></div>
   </section>
 
   <!-- SELF RATING -->
@@ -251,39 +243,85 @@ const KIT_URL="assets/MAIC2026-Mac-Admin-Starter-Kit.pdf";
 let NAME="", muted=false;
 
 /* ---------- DATA ---------- */
-const MYTHS=[
- {q:"You need to be a hardcore coder before you can call yourself a real Mac Admin.",
-  ans:false,exp:"Nope. Great admins start by being curious and owning the fundamentals. Code grows one small script at a time — nobody starts fluent.",cc:"Curiosity + Code"},
- {q:"Macs don't really get malware, so security isn't a Mac Admin's problem.",
-  ans:false,exp:"Myth. Macs are targeted too. Patching, encryption (FileVault), and compliance are core to the job — MDM is your security backbone.",cc:"Command"},
- {q:"When something breaks in production, the fastest fix is to change it live and move on.",
-  ans:false,exp:"Risky. Test in a lab or a small pilot ring first. 'Move fast in prod' is how one Mac's problem becomes 500 Macs' problem.",cc:"Command + Curiosity"},
- {q:"Asking the community for help makes you look junior.",
-  ans:false,exp:"The opposite. Senior admins ask questions every single day — that's literally why #macadminsindia exists. Sharing the answer helps the next person too.",cc:"Community"},
- {q:"An MDM alone can do everything — you'll never need to script.",
-  ans:false,exp:"MDM does the heavy lifting, but scripts are how you extend it: custom reports, edge-case fixes, automations. MDM + a little code = superpowers.",cc:"Code + Command"}
+const ROUNDS=[
+ {c:"Curiosity", em:"🧭", blurb:"Round 1 — the mindset that makes everything else possible."},
+ {c:"Command",   em:"⚙️", blurb:"Round 2 — owning the Mac, your MDM and security."},
+ {c:"Code",      em:"⌨️", blurb:"Round 3 — automating yourself out of the boring."},
+ {c:"Community", em:"🤝", blurb:"Round 4 — the C that carries your whole career."}
 ];
-const SCN=[
- {q:"50 new MacBooks just landed. Onboarding is in 2 days.",sub:"What's your first move?",
-  opts:[{t:"Unbox and manually configure each one by hand",ok:false},
-        {t:"Set up zero-touch / Automated Device Enrollment so they configure themselves",ok:true},
-        {t:"Wait for users to raise tickets, then fix one by one",ok:false}],
-  exp:"Zero-touch enrollment (ADE + your MDM) means a Mac sets itself up out of the box. This is the difference between a scalable admin and a burnt-out one.",cc:"Command + Code"},
- {q:"“My Mac is slow.” That's the whole ticket.",sub:"How do you respond?",
-  opts:[{t:"Reimage the machine immediately to be safe",ok:false},
-        {t:"Ask targeted questions, then check logs & resource usage methodically",ok:true},
-        {t:"Reply “try restarting” and close the ticket",ok:false}],
-  exp:"Methodical troubleshooting beats guessing. Narrow the problem before you touch anything — reimaging first destroys the evidence and the user's trust.",cc:"Command + Curiosity"},
- {q:"You hit a cryptic error you've never seen. Deadline in 1 hour.",sub:"Your play?",
-  opts:[{t:"Randomly try fixes and hope one sticks",ok:false},
-        {t:"Search the MacAdmins Slack + docs, then ask #macadminsindia with details",ok:true},
-        {t:"Ignore it and hope it goes away",ok:false}],
-  exp:"Odds are someone already solved this. Search first, then ask well (error + what you tried). The community is your fastest debugger.",cc:"Community + Curiosity"},
- {q:"You do the same 20-minute manual task 5 times a day.",sub:"What now?",
-  opts:[{t:"Keep doing it — it's only 20 minutes",ok:false},
-        {t:"Write a script/policy once so it runs itself",ok:true},
-        {t:"Ask a teammate to share the load",ok:false}],
-  exp:"That's ~8 hours a week. Automating it once pays you back forever. 'If you do it twice, script it' is the admin's golden rule.",cc:"Code"}
+/* 20 questions · 5 per C · all judgement calls, written for a first-year Mac Admin.
+   type "myth" = 2 options (Myth/Legit) · type "scn" = 3 options. correct = index. */
+const QSET=[
+ /* ---- CURIOSITY ---- */
+ {c:"Curiosity",type:"myth",q:"You need to be a hardcore coder before you can call yourself a real Mac Admin.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"Nope. Great admins start by being curious and owning the fundamentals. Code grows one small script at a time — nobody starts fluent."},
+ {c:"Curiosity",type:"scn",q:"It's your first week and you don't understand half the tools your team uses.",sub:"What's the healthiest move?",
+  opts:["Nod along and hope it clicks eventually","Keep a running list of what you don't know, and learn one a week","Wait until someone formally trains you"],correct:1,
+  exp:"Not knowing isn't the problem — staying that way is. A list turns a vague feeling of being lost into a plan you can actually finish."},
+ {c:"Curiosity",type:"scn",q:"You want to try something new, but you're scared of breaking a real Mac.",sub:"Where do you try it?",
+  opts:["On a colleague's machine — they won't mind","On a spare Mac or a VM you're allowed to break","Nowhere. Too risky to learn"],correct:1,
+  exp:"A lab is where confidence comes from. Breaking things safely — on purpose — is the single fastest way admins level up."},
+ {c:"Curiosity",type:"myth",q:"If a fix works, you don't really need to understand why.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"Myth. Knowing *why* is what lets you fix the next one — and stops you breaking something else. Curiosity compounds; copy-paste doesn't."},
+
+  {c:"Curiosity",type:"scn",q:"Six months in, the job feels routine and you've stopped learning.",sub:"What do you do?",
+  opts:["Nothing — routine means you've mastered it","Pick one new area and go deep for a month","Assume the job is a dead end"],correct:1,
+  exp:"Plateaus are normal; staying on one isn't. Deliberately choosing your next depth area is what separates a 2-year admin from a 10-year one."},
+
+ /* ---- COMMAND ---- */
+ {c:"Command",type:"myth",q:"Macs don't really get malware, so security isn't a Mac Admin's problem.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"Myth. Macs are targeted too. Patching, encryption (FileVault), and compliance are core to the job — MDM is your security backbone."},
+ {c:"Command",type:"scn",q:"50 new MacBooks just landed. Onboarding is in 2 days.",sub:"What's your first move?",
+  opts:["Unbox and configure each one by hand","Set up zero-touch enrollment so they configure themselves","Wait for users to raise tickets, then fix one by one"],correct:1,
+  exp:"Zero-touch enrollment means a Mac sets itself up out of the box. This is the difference between a scalable admin and a burnt-out one."},
+ {c:"Command",type:"scn",q:"“My Mac is slow.” That's the whole ticket.",sub:"How do you respond?",
+  opts:["Reimage the machine immediately to be safe","Ask targeted questions, then check logs & resource usage","Reply “try restarting” and close the ticket"],correct:1,
+  exp:"Methodical troubleshooting beats guessing. Narrow the problem before you touch anything — reimaging first destroys the evidence and the user's trust."},
+ {c:"Command",type:"myth",q:"When something breaks in production, the fastest fix is to change it live and move on.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"Risky. Test in a lab or a small pilot ring first. 'Move fast in prod' is how one Mac's problem becomes 500 Macs' problem."},
+
+  {c:"Command",type:"scn",q:"A user wants admin rights on their Mac “just to install one thing”.",sub:"How do you handle it?",
+  opts:["Give them permanent admin — it's quicker for everyone","Solve the actual need — deploy the app, or grant temporary elevation","Just say no and move on"],correct:1,
+  exp:"Say yes to the need, not the shortcut. Permanent admin everywhere quietly becomes your biggest security problem — and your next audit finding."},
+
+ /* ---- CODE ---- */
+ {c:"Code",type:"scn",q:"You do the same 20-minute manual task 5 times a day.",sub:"What now?",
+  opts:["Keep doing it — it's only 20 minutes","Write a script or policy once so it runs itself","Ask a teammate to share the load"],correct:1,
+  exp:"That's ~8 hours a week. Automating it once pays you back forever. 'If you do it twice, script it' is the admin's golden rule."},
+ {c:"Code",type:"myth",q:"An MDM alone can do everything — you'll never need to script.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"MDM does the heavy lifting, but scripts are how you extend it: custom reports, edge-case fixes, automations. MDM + a little code = superpowers."},
+ {c:"Code",type:"scn",q:"Your first script works — but it only lives on your laptop.",sub:"What's the next step?",
+  opts:["Leave it there; it works","Put it in version control with a short note on how to use it","Email it to whoever asks"],correct:1,
+  exp:"That's how a personal hack becomes team infrastructure — and it survives your next laptop, and your next job. Version control is a superpower, not overhead."},
+ {c:"Code",type:"scn",q:"One user needs an app today — and the whole team will need it next month.",sub:"What do you do?",
+  opts:["Install it by hand on their Mac and move on","Add it to your MDM so every Mac that needs it just gets it","Email everyone the download link and instructions"],correct:1,
+  exp:"Solve it once, for everyone. Doing it by hand means doing it again in a month; emailing a link turns your rollout into 200 support tickets."},
+
+  {c:"Code",type:"scn",q:"Your script has to run on 300 Macs, but you've only tested it on yours.",sub:"What's next?",
+  opts:["Ship it — it works on mine","Test across a few Macs and OS versions, add logging, roll out in rings","Send it to users to run themselves"],correct:1,
+  exp:"“Works on my machine” is where outages are born. Logging is how you find out what happened on the other 299 without guessing."},
+
+ /* ---- COMMUNITY ---- */
+ {c:"Community",type:"myth",q:"Asking the community for help makes you look junior.",
+  opts:["Myth 🚫","Legit ✅"],correct:0,
+  exp:"The opposite. Senior admins ask questions every single day — that's literally why #macadminsindia exists. Sharing the answer helps the next person too."},
+ {c:"Community",type:"scn",q:"You hit a cryptic error you've never seen. Deadline in 1 hour.",sub:"Your play?",
+  opts:["Randomly try fixes and hope one sticks","Search the docs & MacAdmins Slack, then ask with details","Ignore it and hope it goes away"],correct:1,
+  exp:"Odds are someone already solved this. Search first, then ask well (the error + what you tried). The community is your fastest debugger."},
+ {c:"Community",type:"scn",q:"After two hours of digging, you finally fix a weird issue.",sub:"What do you do next?",
+  opts:["Move on — you're already behind","Write down the fix and share it with your team or the community","Keep it to yourself; it makes you valuable"],correct:1,
+  exp:"Two hours becomes two minutes for the next person — and future-you is the next person. Sharing is how the community keeps paying you back."},
+ {c:"Community",type:"scn",q:"A senior admin offers to mentor you. You don't feel “good enough” yet.",sub:"What do you say?",
+  opts:["Say yes — not being good enough yet is the whole point","Wait until you've learned more on your own","Decline politely; you don't want to waste their time"],correct:0,
+  exp:"Say yes. Mentors expect beginners — they were one. Mac Admins India runs a mentorship programme for exactly this, and mentors grow from it too."},
+ {c:"Community",type:"scn",q:"You're new, and someone asks a question in #macadminsindia that you actually know.",sub:"What do you do?",
+  opts:["Stay quiet — let someone senior answer","Answer it. Being new doesn't disqualify you","DM them privately in case you're wrong"],correct:1,
+  exp:"Answering in the open is how you go from taking to belonging — and it helps everyone who searches that question next year. Nobody minds a friendly correction."}
 ];
 const CS=[
  {key:"Curiosity",em:"🧭",sub:"Learning mindset & problem-solving"},
@@ -309,80 +347,77 @@ const ARCH=[
 ];
 
 /* ---------- STATE ---------- */
-let mi=0, ci=0;
+let qi=0;                                     // index into QSET (0..15)
 const scores={Curiosity:0,Command:0,Code:0,Community:0};
 const rating={Curiosity:0,Command:0,Code:0,Community:0};
-const SCREENS=["welcome","myth","scn","rate","result"];
-function setBar(){const idx=SCREENS.indexOf(cur);document.getElementById("bar").style.width=(idx/(SCREENS.length-1)*100)+"%";}
+const PER_C=5;                                // 5 questions per C
 let cur="welcome";
-function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("s-"+id).classList.add("active");cur=id;setBar();window.scrollTo(0,0);
-  if(id==="myth")renderMyth();if(id==="scn")renderScn();if(id==="rate")renderRate();if(id==="result")renderResult();}
-
-/* ---------- MYTHS ---------- */
-function renderMyth(){
-  const m=MYTHS[mi];
-  document.getElementById("m-count").textContent=`Myth ${mi+1} of ${MYTHS.length}`;
-  document.getElementById("m-q").textContent=m.q;
-  const box=document.getElementById("m-opts");box.innerHTML="";
-  [["Myth 🚫",false],["Legit ✅",true]].forEach(([label,val],i)=>{
-    const b=document.createElement("button");b.className="opt";
-    b.innerHTML=`<span class="k">${i?"B":"A"}</span><span>${label}</span>`;
-    b.onclick=()=>answerMyth(val,b);box.appendChild(b);
-  });
-  document.getElementById("m-reveal").classList.remove("show");
-  document.getElementById("m-next").style.display="none";
-  document.getElementById("m-next").textContent = mi<MYTHS.length-1 ? "Next myth →" : "On to the scenarios →";
+function setBar(){
+  let pct=0;
+  if(cur==="welcome") pct=0;
+  else if(cur==="q")  pct=6+(qi/QSET.length)*72;
+  else if(cur==="rate") pct=86;
+  else pct=100;
+  document.getElementById("bar").style.width=pct+"%";
 }
-function answerMyth(val,btn){
-  const m=MYTHS[mi];const opts=document.getElementById("m-opts").children;
-  [...opts].forEach(o=>{o.disabled=true;o.classList.add("dim");});
-  const correct = val===m.ans;
-  btn.classList.remove("dim");btn.classList.add(correct?"correct":"wrong");
-  // highlight the right one
-  const rightBtn = m.ans? opts[1]:opts[0];rightBtn.classList.remove("dim");rightBtn.classList.add("correct");
-  if(correct)bump(m.cc);
+function go(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("s-"+id).classList.add("active");
+  cur=id; setBar(); window.scrollTo(0,0);
+  if(id==="q")renderQ(); if(id==="rate")renderRate(); if(id==="result")renderResult();
+}
+
+/* ---------- QUESTIONS (4 rounds, one per C) ---------- */
+function roundOf(i){ return Math.floor(i/PER_C); }          // 0..3
+function renderQ(){
+  const q=QSET[qi]; if(!q) return;
+  const r=ROUNDS[roundOf(qi)];
+  const posInRound=(qi%PER_C)+1;
+  document.getElementById("q-count").textContent=`Round ${roundOf(qi)+1} · Q${posInRound} of ${PER_C}`;
+  document.getElementById("q-pill").textContent=`${r.em} ${r.c}`;
+  // show the round banner only on the first question of each round
+  const intro=document.getElementById("q-intro");
+  if(posInRound===1){ intro.textContent=r.blurb; intro.classList.add("show"); }
+  else intro.classList.remove("show");
+  document.getElementById("q-q").textContent=q.q;
+  const sub=document.getElementById("q-sub"); sub.textContent=q.sub||""; sub.style.display=q.sub?"block":"none";
+  const box=document.getElementById("q-opts"); box.innerHTML="";
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement("button"); b.className="opt";
+    b.innerHTML=`<span class="k">${"ABC"[i]}</span><span>${opt}</span>`;
+    b.onclick=()=>answerQ(i,b,box);
+    box.appendChild(b);
+  });
+  document.getElementById("q-reveal").classList.remove("show");
+  const nb=document.getElementById("q-next");
+  nb.style.display="none";
+  nb.textContent = qi<QSET.length-1
+    ? (posInRound===PER_C ? `Next round: ${ROUNDS[roundOf(qi)+1].c} →` : "Next →")
+    : "Almost done →";
+}
+function answerQ(choice,btn,box){
+  const q=QSET[qi];
+  const opts=[...box.children];
+  opts.forEach((b,i)=>{ b.disabled=true; b.classList.add("dim");
+    if(i===q.correct){ b.classList.remove("dim"); b.classList.add("correct"); } });
+  const correct = choice===q.correct;
+  if(!correct){ btn.classList.remove("dim"); btn.classList.add("wrong"); }
+  if(correct) scores[q.c]++;
   sfx(correct?"correct":"wrong");
-  const rv=document.getElementById("m-reveal");
-  document.getElementById("m-verdict").innerHTML = (correct?"✅ Nailed it":"💡 Gotcha")+` — this is a <span style="color:${m.ans?'var(--good)':'var(--bad)'}">${m.ans?'true':'myth'}</span>`;
-  document.getElementById("m-exp").textContent=m.exp;
-  document.getElementById("m-cc").textContent="Builds: "+m.cc;
-  rv.classList.add("show");
-  document.getElementById("m-next").style.display="block";
+  document.getElementById("q-verdict").innerHTML = correct
+    ? "✅ Nailed it"
+    : (q.type==="myth" ? "💡 Gotcha — it's a <span style=\"color:var(--bad)\">myth</span>" : "🤔 There's a better move");
+  document.getElementById("q-exp").textContent=q.exp;
+  document.getElementById("q-cc").textContent="Builds: "+q.c;
+  document.getElementById("q-reveal").classList.add("show");
+  document.getElementById("q-next").style.display="block";
 }
-function nextMyth(){mi++;if(mi<MYTHS.length){renderMyth();window.scrollTo(0,0);}else{go("scn");}}
+function nextQ(){
+  qi++;
+  if(qi<QSET.length){ renderQ(); setBar(); window.scrollTo(0,0); }
+  else go("rate");
+}
 
-/* ---------- SCENARIOS ---------- */
-function renderScn(){
-  const s=SCN[ci];
-  document.getElementById("c-count").textContent=`Scenario ${ci+1} of ${SCN.length}`;
-  document.getElementById("c-q").textContent=s.q;
-  document.getElementById("c-sub").textContent=s.sub;
-  const box=document.getElementById("c-opts");box.innerHTML="";
-  s.opts.forEach((o,i)=>{
-    const b=document.createElement("button");b.className="opt";
-    b.innerHTML=`<span class="k">${"ABC"[i]}</span><span>${o.t}</span>`;
-    b.onclick=()=>answerScn(o,b,box);box.appendChild(b);
-  });
-  document.getElementById("c-reveal").classList.remove("show");
-  document.getElementById("c-next").style.display="none";
-  document.getElementById("c-next").textContent = ci<SCN.length-1 ? "Next scenario →" : "Almost done →";
-}
-function answerScn(o,btn,box){
-  const s=SCN[ci];const opts=box.children;
-  [...opts].forEach((b,i)=>{b.disabled=true;b.classList.add("dim");if(s.opts[i].ok){b.classList.remove("dim");b.classList.add("correct");}});
-  if(!o.ok){btn.classList.remove("dim");btn.classList.add("wrong");}
-  if(o.ok)bump(s.cc);
-  sfx(o.ok?"correct":"wrong");
-  const rv=document.getElementById("c-reveal");
-  document.getElementById("c-verdict").innerHTML = o.ok? "✅ Smart call" : "🤔 There's a better move";
-  document.getElementById("c-exp").textContent=s.exp;
-  document.getElementById("c-cc").textContent="Builds: "+s.cc;
-  rv.classList.add("show");
-  document.getElementById("c-next").style.display="block";
-}
-function nextScn(){ci++;if(ci<SCN.length){renderScn();window.scrollTo(0,0);}else{go("rate");}}
-
-function bump(cc){cc.split("+").forEach(c=>{const k=c.trim();if(scores[k]!==undefined)scores[k]++;});}
 
 /* ---------- SELF RATING ---------- */
 function renderRate(){
@@ -400,7 +435,7 @@ function renderRate(){
 function checkRate(){document.getElementById("rate-go").disabled = Object.values(rating).some(v=>v===0);}
 
 /* ---------- RESULTS ---------- */
-const CMAX={Curiosity:4,Command:5,Code:4,Community:2}; // max quiz points per C (matches MYTHS+SCN 'builds')
+const CMAX={Curiosity:PER_C,Command:PER_C,Code:PER_C,Community:PER_C}; // 4 questions per C — clean, even scoring
 function finish(){go("result");}
 function renderResult(){
   // combine quiz (0-100 scaled) with self-rating (1-5 -> 0-100)
@@ -447,7 +482,7 @@ function renderResult(){
   setTimeout(()=>{ confetti(); sfx("win"); }, 650);
 }
 function animateNum(el,to){let n=0;const step=Math.max(1,Math.round(to/28));const t=setInterval(()=>{n+=step;if(n>=to){n=to;clearInterval(t);}el.textContent=n;},28);}
-function restart(){mi=0;ci=0;Object.keys(scores).forEach(k=>scores[k]=0);Object.keys(rating).forEach(k=>rating[k]=0);go("welcome");}
+function restart(){qi=0;Object.keys(scores).forEach(k=>scores[k]=0);Object.keys(rating).forEach(k=>rating[k]=0);go("welcome");}
 /* ---------- START + SOUND ---------- */
 let AC=null;
 function initAudio(){ try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==="suspended")AC.resume(); }catch(e){} }
@@ -466,12 +501,14 @@ function sfx(kind){
   else if(kind==="win"){[523,659,784,1047].forEach((f,i)=>tone(f,i*0.11,0.34,"triangle",0.15));}
 }
 function toggleMute(){ muted=!muted; document.getElementById("mute").textContent=muted?"🔇":"🔊"; if(!muted){initAudio();tone(880,0,0.1,"triangle");} }
-function startGame(){ NAME=(document.getElementById("pname").value||"").trim().slice(0,22); initAudio(); go("myth"); }
+function startGame(){ NAME=(document.getElementById("pname").value||"").trim().slice(0,22); initAudio(); go("q"); }
 
 /* ---------- CONFETTI ---------- */
 function confetti(){
-  const cv=document.getElementById("confetti"); if(!cv)return;
+  const cv=document.getElementById("confetti");
+  if(!cv || typeof cv.getContext!=="function") return;   // never let decoration break the card
   cv.style.display="block"; const x=cv.getContext("2d");
+  if(!x) return;
   const dpr=Math.min(window.devicePixelRatio||1,2);
   const W=cv.width=innerWidth*dpr, H=cv.height=innerHeight*dpr;
   const cols=["#4f7df0","#22c1dc","#35d0a5","#f5c542","#f59042","#ec5f9e","#a96be8"];

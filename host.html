@@ -154,6 +154,55 @@
   .sbox.wide b{font-size:20px}
   #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150;display:none}
   @media(max-width:900px){ .endcols{grid-template-columns:1fr} .joinmini{display:none!important} }
+  /* ---- editor modal ---- */
+  .modal{position:fixed;inset:0;background:rgba(4,10,22,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    z-index:300;display:none;align-items:center;justify-content:center;padding:26px}
+  .modal.on{display:flex}
+  .modal-box{background:#0e2245;border:1px solid var(--line);border-radius:20px;width:100%;max-width:940px;
+    max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .3s}
+  .modal-box.narrow{max-width:620px}
+  .modal-box.tiny{max-width:420px}
+  .modal input[type=password]{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+    color:var(--ink);font-family:inherit;font-size:16px;padding:13px 14px;outline:none;letter-spacing:2px}
+  .modal input[type=password]:focus{border-color:var(--accent)}
+  .modal-box.shake{animation:shake .34s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+  .lockpill{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--good)}
+  .modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 24px 14px;border-bottom:1px solid var(--line)}
+  .modal-head h3{margin:0;font-size:21px;font-weight:850}
+  .modal-head p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+  .modal-body{padding:18px 24px;overflow-y:auto;flex:1}
+  .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 24px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .edround{margin-bottom:20px}
+  .edround h4{margin:0 0 10px;font-size:14px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+  .edq{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+  .edq .num{flex:0 0 26px;height:26px;border-radius:8px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:12px;font-weight:850;color:var(--muted)}
+  .edq .txt{flex:1;min-width:0}
+  .edq .txt b{display:block;font-size:14px;font-weight:700;line-height:1.35}
+  .edq .txt span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+  .edq .acts{display:flex;gap:6px;flex-shrink:0}
+  .mini-btn{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ink);border-radius:8px;
+    padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
+  .mini-btn:hover{background:rgba(255,255,255,.16)}
+  .mini-btn.danger:hover{background:rgba(255,107,138,.25);border-color:var(--bad)}
+  .addq{background:transparent;border:1.5px dashed var(--line);color:var(--accent);border-radius:12px;padding:10px;
+    width:100%;font-size:13px;font-weight:800;cursor:pointer}
+  .addq:hover{border-color:var(--accent);background:rgba(90,162,255,.08)}
+  /* form bits */
+  .fl{display:block;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin:16px 0 7px}
+  .opt-lbl{font-weight:600;letter-spacing:0;text-transform:none;color:var(--muted)}
+  .modal input[type=text],.modal textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+    color:var(--ink);font-family:inherit;font-size:14.5px;padding:11px 13px;outline:none;resize:vertical}
+  .modal input[type=text]:focus,.modal textarea:focus{border-color:var(--accent)}
+  .segs{display:flex;gap:8px;flex-wrap:wrap}
+  .seg{background:var(--card);border:1.5px solid var(--line);color:var(--muted);border-radius:10px;padding:9px 14px;
+    font-size:13.5px;font-weight:700;cursor:pointer}
+  .seg.on{border-color:var(--accent);background:rgba(90,162,255,.16);color:var(--ink)}
+  .orow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .orow .pick{flex:0 0 26px;height:26px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;padding:0}
+  .orow .pick.on{background:var(--good);border-color:var(--good)}
+  .orow input{flex:1}
+  .fw{margin-top:14px;font-size:13px;color:var(--gold);min-height:18px}
 </style>
 </head>
 <body>
@@ -184,6 +233,12 @@
     <div class="count">players in the room<b id="pcount">0</b></div>
     <div class="startbar">
       <button class="btn" id="startBtn" onclick="startGame()">Start the game →</button>
+    </div>
+    <div class="testbar">
+      <span class="testlbl">Questions</span>
+      <button class="reset" onclick="openEditor()">✏️ Manage questions</button>
+      <span class="testlbl" id="qcountlbl" style="color:var(--accent)"></span>
+      <span class="lockpill" id="lockstate"></span>
     </div>
     <div class="testbar">
       <span class="testlbl">Rehearsing?</span>
@@ -254,14 +309,106 @@
   <div class="banner">Curiosity · Command · Code · Community &nbsp;·&nbsp; Engage · Empower · Elevate</div>
 </div>
 
+<!-- ============ QUESTION EDITOR ============ -->
+<div class="modal" id="editor">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>Manage questions</h3>
+        <p id="edSummary">—</p>
+      </div>
+      <button class="reset" onclick="closeEditor()">✕ Close</button>
+    </div>
+
+    <div class="modal-body" id="edList"></div>
+
+    <div class="modal-foot">
+      <button class="reset" onclick="lockQuestions()">🔒 Lock</button>
+      <button class="reset" onclick="resetQuestions()">↺ Restore built-in questions</button>
+      <button class="reset" onclick="exportQuestions()">⧉ Copy as JSON</button>
+      <button class="btn sm" onclick="closeEditor()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- password gate for editing questions -->
+<div class="modal" id="pwgate">
+  <div class="modal-box tiny">
+    <div class="modal-head">
+      <div>
+        <h3>🔒 Moderators only</h3>
+        <p>Enter the password to add, edit or remove questions.</p>
+      </div>
+      <button class="reset" onclick="closeGate()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input id="pwInput" type="password" placeholder="Password" autocomplete="off"
+             onkeydown="if(event.key==='Enter')submitGate()">
+      <div class="fw" id="pwWarn"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="reset" onclick="closeGate()">Cancel</button>
+      <button class="btn sm" onclick="submitGate()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- add / edit form -->
+<div class="modal" id="qform">
+  <div class="modal-box narrow">
+    <div class="modal-head">
+      <h3 id="qfTitle">Add a question</h3>
+      <button class="reset" onclick="closeForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="fl">Round · which C does it build?</label>
+      <div class="segs" id="qfC"></div>
+
+      <label class="fl">Format</label>
+      <div class="segs" id="qfType"></div>
+
+      <label class="fl">Question</label>
+      <textarea id="qfPrompt" rows="2" placeholder="e.g. Asking the community for help makes you look junior."></textarea>
+
+      <label class="fl">Second line <span class="opt-lbl">(optional — e.g. “What's your first move?”)</span></label>
+      <input id="qfSub" type="text" placeholder="">
+
+      <label class="fl">Answers <span class="opt-lbl">— tap the circle to mark the correct one</span></label>
+      <div id="qfOpts"></div>
+
+      <label class="fl">The reveal — why is that the answer?</label>
+      <textarea id="qfExp" rows="3" placeholder="This is where the teaching happens."></textarea>
+
+      <div class="fw" id="qfWarn"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="reset" onclick="closeForm()">Cancel</button>
+      <button class="btn sm" onclick="saveForm()">Save question</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="live-questions.js"></script>
 <script>
-const Q = window.LIVE_QUESTIONS || [];
-const N = Q.length;
+const DEFAULT_Q = window.LIVE_QUESTIONS || [];
+let Q = DEFAULT_Q.slice();   // live question set (may be replaced by the editor)
+let N = Q.length;
+const CS_LIST=["Curiosity","Command","Code","Community"];
+function setQuestions(arr,{publish=false}={}){
+  Q = (arr&&arr.length)? arr.slice() : DEFAULT_Q.slice();
+  // keep rounds ordered by C so the round badges stay coherent
+  Q.sort((a,b)=>(a.round||1)-(b.round||1));
+  N = Q.length;
+  if(publish){
+    if(isDemo()){ try{ localStorage.setItem("maic_questions",JSON.stringify(Q)); }catch(e){} }
+    else room.child("questions").set(Q);
+  }
+  renderEditor(); render();
+}
 // play URL = play.html in the same folder as host.html (strip any query/hash)
 const baseUrl = location.href.split(/[?#]/)[0];
 const PLAYURL = baseUrl.substring(0, baseUrl.lastIndexOf("/")+1) + "play.html";
@@ -362,6 +509,8 @@ if(!cfgOK()){
   room.child("state").on("value",s=>{ state=s.val()||{phase:"lobby",q:0,revealed:false}; render(); });
   room.child("players").on("value",s=>{ players=s.val()||{}; render(); });
   room.child("answers").on("value",s=>{ answers=s.val()||{}; render(); });
+  // questions saved in the editor live in the room, so phones get them too
+  room.child("questions").on("value",s=>{ const v=s.val(); Q=(v&&v.length)?v.slice():DEFAULT_Q.slice(); N=Q.length; renderEditor(); render(); });
 }
 
 /* ---- data layer: routes to Firebase, or to memory in demo mode ---- */
@@ -608,6 +757,186 @@ function resetGame(){
   toast("Game reset — back to lobby");
 }
 
+/* ================= QUESTION EDITOR ================= */
+const C_EM = window.C_EMOJI||{Curiosity:"🧭",Command:"⚙️",Code:"⌨️",Community:"🤝"};
+const C_RN = window.C_ROUND||{Curiosity:1,Command:2,Code:3,Community:4};
+let editIdx=-1, formC="Curiosity", formType="myth", formCorrect=0;
+
+/* ---- password gate ----------------------------------------------------------
+   The password is stored as a hash so it isn't sitting in the page source in
+   plain text. Note this is a *friendly guard* against someone wandering up to
+   the podium laptop — it is not real security, because all of this runs in the
+   browser. Don't reuse a password you care about here.
+---------------------------------------------------------------------------- */
+const QPASS_HASH="4e3641d5";
+function hashPw(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(16); }
+let unlocked=false;
+try{ unlocked = sessionStorage.getItem("maic_qunlocked")==="1"; }catch(e){}
+
+function requireUnlock(then){
+  if(unlocked){ then(); return; }
+  window._afterUnlock=then;
+  const g=document.getElementById("pwgate");
+  document.getElementById("pwInput").value="";
+  document.getElementById("pwWarn").textContent="";
+  g.classList.add("on");
+  setTimeout(()=>{ const i=document.getElementById("pwInput"); if(i.focus) i.focus(); },60);
+}
+function closeGate(){ document.getElementById("pwgate").classList.remove("on"); window._afterUnlock=null; }
+function submitGate(){
+  const val=document.getElementById("pwInput").value||"";
+  if(hashPw(val)===QPASS_HASH){
+    unlocked=true;
+    try{ sessionStorage.setItem("maic_qunlocked","1"); }catch(e){}
+    const fn=window._afterUnlock;          // capture BEFORE closeGate() clears it
+    closeGate(); toast("Unlocked — you can edit questions");
+    if(fn) fn();
+  }else{
+    const box=document.querySelector("#pwgate .modal-box");
+    document.getElementById("pwWarn").textContent="⚠️ Wrong password. Try again.";
+    if(box){ box.classList.add("shake"); setTimeout(()=>box.classList.remove("shake"),360); }
+    document.getElementById("pwInput").value="";
+  }
+}
+function lockQuestions(){
+  unlocked=false;
+  try{ sessionStorage.removeItem("maic_qunlocked"); }catch(e){}
+  closeEditor(); renderEditor(); toast("Questions locked");
+}
+
+function openEditor(){ requireUnlock(()=>{ document.getElementById("editor").classList.add("on"); renderEditor(); }); }
+function closeEditor(){ document.getElementById("editor").classList.remove("on"); }
+
+function renderEditor(){
+  const lbl=document.getElementById("qcountlbl");
+  if(lbl) lbl.textContent = N+" questions · "+CS_LIST.map(c=>Q.filter(q=>q.cc===c).length).join("/");
+  const ls=document.getElementById("lockstate");
+  if(ls) ls.textContent = unlocked ? "🔓 unlocked" : "🔒 password protected";
+  const list=document.getElementById("edList"); if(!list) return;
+  const sum=document.getElementById("edSummary");
+  if(sum) sum.textContent = `${N} questions across 4 rounds · ${isDemo()?"saved on this device (demo mode)":"published live to every phone"}`;
+  list.innerHTML="";
+  CS_LIST.forEach(c=>{
+    const items=Q.map((q,i)=>({q,i})).filter(x=>x.q.cc===c);
+    const box=document.createElement("div"); box.className="edround";
+    box.innerHTML=`<h4>${C_EM[c]} ${c} <span style="color:var(--muted);font-weight:700;letter-spacing:0;text-transform:none">· ${items.length} question${items.length===1?"":"s"}</span></h4>`;
+    items.forEach((x,n)=>{
+      const row=document.createElement("div"); row.className="edq";
+      const isMyth=x.q.type==="myth";
+      row.innerHTML=`<div class="num">${n+1}</div>
+        <div class="txt"><b>${escapeHtml(x.q.prompt)}</b>
+          <span>${isMyth?"Myth or Legit":"Scenario"} · answer: ${escapeHtml(x.q.options[x.q.correct]||"—")}</span></div>
+        <div class="acts">
+          <button class="mini-btn" onclick="editQ(${x.i})">Edit</button>
+          <button class="mini-btn danger" onclick="removeQ(${x.i})">Remove</button>
+        </div>`;
+      box.appendChild(row);
+    });
+    const add=document.createElement("button"); add.className="addq";
+    add.textContent="＋ Add a question to "+c;
+    add.onclick=()=>addQ(c);
+    box.appendChild(add);
+    list.appendChild(box);
+  });
+}
+
+function addQ(c){ if(!unlocked){ requireUnlock(()=>addQ(c)); return; } editIdx=-1; formC=c||"Curiosity"; formType="myth"; formCorrect=0;
+  document.getElementById("qfTitle").textContent="Add a question";
+  fillForm({prompt:"",sub:"",options:["Myth 🚫","Legit ✅"],exp:""});
+  document.getElementById("qform").classList.add("on"); }
+
+function editQ(i){ if(!unlocked){ requireUnlock(()=>editQ(i)); return; } const q=Q[i]; if(!q)return;
+  editIdx=i; formC=q.cc; formType=q.type==="myth"?"myth":"scenario"; formCorrect=q.correct;
+  document.getElementById("qfTitle").textContent="Edit question";
+  fillForm(q);
+  document.getElementById("qform").classList.add("on"); }
+
+function removeQ(i){ if(!unlocked){ requireUnlock(()=>removeQ(i)); return; } const q=Q[i]; if(!q)return;
+  if(!confirm("Remove this question?\n\n“"+q.prompt+"”")) return;
+  const arr=Q.slice(); arr.splice(i,1);
+  if(!arr.length){ alert("You need at least one question."); return; }
+  setQuestions(arr,{publish:true}); toast("Question removed");
+}
+
+function fillForm(q){
+  document.getElementById("qfPrompt").value=q.prompt||"";
+  document.getElementById("qfSub").value=q.sub||"";
+  document.getElementById("qfExp").value=q.exp||"";
+  document.getElementById("qfWarn").textContent="";
+  // C picker
+  const cbox=document.getElementById("qfC"); cbox.innerHTML="";
+  CS_LIST.forEach(c=>{ const b=document.createElement("button"); b.className="seg"+(c===formC?" on":"");
+    b.textContent=C_EM[c]+" "+c; b.onclick=()=>{formC=c; fillForm(readForm()); }; cbox.appendChild(b); });
+  // type picker
+  const tbox=document.getElementById("qfType"); tbox.innerHTML="";
+  [["myth","Myth or Legit (2 answers)"],["scenario","Scenario (3 answers)"]].forEach(([t,label])=>{
+    const b=document.createElement("button"); b.className="seg"+(t===formType?" on":"");
+    b.textContent=label;
+    b.onclick=()=>{ const cur=readForm(); formType=t;
+      cur.options = t==="myth" ? ["Myth 🚫","Legit ✅"]
+                               : [cur.options[0]||"",cur.options[1]||"",cur.options[2]||""];
+      if(formCorrect>=cur.options.length) formCorrect=0;
+      fillForm(cur); };
+    tbox.appendChild(b); });
+  // options
+  const need = formType==="myth" ? 2 : 3;
+  const opts=(q.options||[]).slice(0,need);
+  while(opts.length<need) opts.push("");
+  const obox=document.getElementById("qfOpts"); obox.innerHTML="";
+  opts.forEach((o,i)=>{
+    const row=document.createElement("div"); row.className="orow";
+    const pick=document.createElement("button"); pick.className="pick"+(i===formCorrect?" on":"");
+    pick.title="Mark as the correct answer";
+    pick.onclick=()=>{ formCorrect=i; fillForm(readForm()); };
+    const inp=document.createElement("input"); inp.type="text"; inp.value=o;
+    inp.placeholder = formType==="myth" ? (i?"Legit ✅":"Myth 🚫") : "Answer "+"ABC"[i];
+    inp.dataset.oi=i;
+    row.appendChild(pick); row.appendChild(inp); obox.appendChild(row);
+  });
+}
+function readForm(){
+  return {
+    prompt:document.getElementById("qfPrompt").value,
+    sub:document.getElementById("qfSub").value,
+    exp:document.getElementById("qfExp").value,
+    options:[...document.querySelectorAll("#qfOpts input")].map(i=>i.value),
+    correct:formCorrect, cc:formC, type:formType
+  };
+}
+function closeForm(){ document.getElementById("qform").classList.remove("on"); }
+function saveForm(){
+  if(!unlocked){ toast("Locked — unlock first"); return; }
+  const f=readForm(); const warn=document.getElementById("qfWarn");
+  if(!f.prompt.trim()){ warn.textContent="⚠️ Add the question text."; return; }
+  if(f.options.some(o=>!o.trim())){ warn.textContent="⚠️ Every answer needs text."; return; }
+  if(!f.exp.trim()){ warn.textContent="⚠️ Add the reveal — it's the part that teaches."; return; }
+  const q={ round:C_RN[f.cc], type:f.type, tag:C_EM[f.cc]+" "+f.cc,
+            prompt:f.prompt.trim(), sub:f.sub.trim(), options:f.options.map(o=>o.trim()),
+            correct:f.correct, exp:f.exp.trim(), cc:f.cc };
+  const arr=Q.slice();
+  if(editIdx>=0) arr[editIdx]=q; else arr.push(q);
+  setQuestions(arr,{publish:true});
+  closeForm(); toast(editIdx>=0?"Question updated":"Question added");
+}
+function resetQuestions(){
+  if(!unlocked){ requireUnlock(resetQuestions); return; }
+  if(!confirm("Restore the built-in question set? Any edits you've made here will be lost.")) return;
+  if(isDemo()){ try{ localStorage.removeItem("maic_questions"); }catch(e){} setQuestions(DEFAULT_Q,{publish:false}); }
+  else room.child("questions").remove();
+  toast("Built-in questions restored");
+}
+function exportQuestions(){
+  const txt=JSON.stringify(Q,null,1);
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast("Questions copied as JSON"),()=>{});
+  else toast("Copy failed — check the console"), console.log(txt);
+}
+
+// in demo mode, pick up anything saved on this device
+if(isDemo()){
+  try{ const saved=JSON.parse(localStorage.getItem("maic_questions")||"null");
+    if(saved&&saved.length){ Q=saved.slice(); N=Q.length; } }catch(e){}
+}
+renderEditor();
 render();  // paint the lobby immediately (works in demo mode too)
 </script>
 </body>

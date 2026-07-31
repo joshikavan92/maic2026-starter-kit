@@ -89,18 +89,51 @@ Realtime Database** — you just paste a config, no server to run.
 
 Commit & push (or `./deploy.sh`). That's it — the live game is now wired.
 
-### The format — 3 rounds, 15 questions
+### The format — 4 rounds, 20 questions, one round per C
 
-| Round | Name | Questions | Feel |
+| Round | Name | Questions | What it builds |
 |---|---|---|---|
-| 1 | **Myth or Legit?** | 5 | Fast binary warm-up (some are true — it's not all myths) |
-| 2 | **You're on call** | 5 | Real-world scenarios, 3 options each |
-| 3 | **Level up** | 5 | Tools, terms & commands for the craft |
+| 1 | 🧭 **Curiosity** | 5 | The learning mindset |
+| 2 | ⚙️ **Command** | 5 | The Mac, your MDM, security |
+| 3 | ⌨️ **Code** | 5 | Automation thinking |
+| 4 | 🤝 **Community** | 5 | Asking, sharing, mentorship |
 
-The host screen shows the round name and both positions (`Q3 of 5 · overall 8/15`), so the rounds
-give you natural stopping points. **Timing:** budget ~35–45 seconds per question including the
-reveal — that's roughly **10–12 minutes for all 15**. If you're tight on time in a 25-minute slot,
-finish after Round 2 and mention Round 3 is on their phones in the self-paced challenge.
+Every question is a judgement call written for a first-year admin — no command-line trivia.
+A mix of *Myth or Legit?* (2 options) and situations (3 options), and each reveal teaches the point.
+
+The host screen shows the round and both positions (`Q3 of 5 · overall 13/20`), so the rounds are
+natural stopping points. **Timing:** ~35–45 seconds per question including the reveal ≈ **12–15
+minutes for all 20**. Tight on time? Finish after Round 2 or 3 and point people at the self-paced
+challenge for the rest.
+
+> The same 20 questions power the self-paced `challenge.html`, which adds a **rate-yourself** step
+> at the end and turns the whole thing into a personal Readiness Card. `live-questions.js` and the
+> `QSET` array in `challenge.html` are kept identical — update both if you edit questions.
+
+### Editing questions during an event (no code) ✏️🔒
+
+The host screen has a built-in editor — click **✏️ Manage questions** in the lobby.
+
+- **Password protected.** The password is **`AppleJamf@123`** (change it — see below). Once entered it's
+  remembered for that browser session; **🔒 Lock** in the editor footer locks it again.
+- **Add / Edit / Remove** any question, grouped by round. Pick the C it builds, choose the format
+  (*Myth or Legit* = 2 answers, *Scenario* = 3), and tap a circle to mark the correct answer.
+- Saving **publishes to Firebase**, so every phone picks up the new set immediately — players always
+  follow the host, not the file.
+- **↺ Restore built-in questions** reverts to `live-questions.js`; **⧉ Copy as JSON** copies the current
+  set so you can paste it into that file to keep changes permanently.
+- Without Firebase (Demo mode) edits save to that device only, which is fine for rehearsing.
+
+**To change the password:** it's stored as a hash so it isn't visible in the page source. Generate a new
+one and replace `QPASS_HASH` in `host.html`:
+
+```bash
+node -e 'const p=process.argv[1];let h=2166136261;for(let i=0;i<p.length;i++){h^=p.charCodeAt(i);h=Math.imul(h,16777619);}console.log((h>>>0).toString(16))' "YourNewPassword"
+```
+
+> ⚠️ Be realistic about what this is: everything here runs in the browser, so the gate stops someone
+> casually poking at the podium laptop — it is **not** real security, and a determined person could get
+> past it. Don't reuse a password you care about, and lock the Firebase rules after the event.
 
 ### Winners & statistics
 

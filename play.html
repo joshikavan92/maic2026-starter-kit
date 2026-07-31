@@ -128,7 +128,8 @@
 <script src="firebase-config.js"></script>
 <script src="live-questions.js"></script>
 <script>
-const Q=window.LIVE_QUESTIONS||[]; const N=Q.length;
+const DEFAULT_Q=window.LIVE_QUESTIONS||[];
+let Q=DEFAULT_Q.slice(); let N=Q.length;   // the host can publish an edited set; we follow it
 document.getElementById("endOf").textContent="out of "+N;
 let db,room,pid,name="",state={phase:"lobby",q:0,revealed:false},answersAll={},joined=false;
 
@@ -145,6 +146,15 @@ if(!cfgOK()){
 }else{
   firebase.initializeApp(window.FIREBASE_CONFIG);
   db=firebase.database(); room=db.ref("rooms/"+(window.ROOM||"maic2026"));
+  // follow whatever question set the host has published (editor changes land here)
+  room.child("questions").on("value",s=>{
+    const v=s.val();
+    Q=(v&&v.length)? v.slice() : DEFAULT_Q.slice();
+    Q.sort((a,b)=>(a.round||1)-(b.round||1));
+    N=Q.length;
+    document.getElementById("endOf").textContent="out of "+N;
+    if(joined) render();
+  });
 }
 
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); document.getElementById(id).classList.add("on"); window.scrollTo(0,0); }
