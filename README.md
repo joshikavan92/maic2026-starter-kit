@@ -61,6 +61,76 @@ The directory is generated from a single data file. To add or change a resource,
 (rebuilds the ebook). If you're editing by hand, each entry in `index.html` is a simple
 `<a class="res" href="…">` block — copy one and change the text.
 
+## Live game (host-driven, real-time) 🎮
+
+`host.html` (big screen) + `play.html` (phones) run a live, presenter-controlled quiz with a
+real-time answer bar chart. Because GitHub Pages is static, the sync runs on a **free Firebase
+Realtime Database** — you just paste a config, no server to run.
+
+### One-time Firebase setup (~5 min)
+
+1. Go to **console.firebase.google.com** → **Add project** (name it anything; Analytics off is fine).
+2. Left menu → **Build → Realtime Database** → **Create Database** → pick a location →
+   **Start in test mode** (or "locked" then paste the rules below).
+3. Set the rules (Realtime Database → **Rules** tab) to:
+   ```json
+   {
+     "rules": {
+       "rooms": { ".read": true, ".write": true }
+     }
+   }
+   ```
+   > This is open on purpose so phones can join without logins. It only exposes the game room.
+   > After the event, delete the database (or set both to `false`) to close it.
+4. Gear icon → **Project settings** → scroll to **Your apps** → click the **Web** icon `</>` →
+   register an app → copy the `firebaseConfig` values.
+5. Open **`firebase-config.js`** in this folder and paste those values (apiKey, authDomain,
+   **databaseURL**, projectId, appId). Make sure `databaseURL` is filled in.
+
+Commit & push (or `./deploy.sh`). That's it — the live game is now wired.
+
+### Running it at the event
+
+- **Big screen / projector:** open **`…/host.html`**. It shows a join QR + live player count.
+  When people have joined, click **Start the game**, then **Reveal answer** and **Next →** to
+  drive each question. Answer bars fill in real time as the room taps.
+- **Audience:** they scan the QR (or open **`…/play.html`**), type a name, and answer each
+  question on their phones. Their screen follows whatever you do on the host.
+### Testing & resetting (rehearse before the room arrives) 🧪
+
+The host screen has built-in test tools, so you can rehearse the whole flow solo — even
+**before Firebase is configured** (it drops into *Demo mode* automatically and runs locally).
+
+In the lobby:
+- **🧪 Add 12 test players** / **Add 40** — fills the room with fake players.
+- **auto-answer for test players** (checkbox, on by default) — when you Start or hit Next, the
+  test players answer over a few seconds so you can watch the bars fill exactly like the real thing.
+
+During a question:
+- **🧪 Simulate answers** — manually trigger the fake answers for the current question.
+
+Resetting:
+- **🧪 Clear test players** (top right) — removes only the fake players + their answers, so you can
+  go live with a clean room. **Do this right before the session starts.**
+- **↺ Reset game** (top right) — clears *all* players and answers and returns everyone to the lobby.
+  Use it between runs; ask players to reload their phones.
+- On a player's phone, **"Not you? Change name"** on the waiting screen leaves and rejoins — handy
+  when testing repeatedly from one device.
+
+A good dry run: open `host.html` → Add 12 test players → Start → watch bars → Reveal → Next through
+the end → Clear test players → Reset game.
+
+URLs (with your current repo):
+```
+Host screen: https://joshikavan92.github.io/maic2026-starter-kit/host.html
+Players:     https://joshikavan92.github.io/maic2026-starter-kit/play.html
+```
+`qr-play.png` (in the repo) is a themed QR for the player URL if you want it on a slide too;
+the host screen also shows a join QR automatically.
+
+Editing the live questions: they live in **`live-questions.js`** (shared by host + player) — edit
+the array, commit, push.
+
 ## Custom domain (optional)
 
 In **Settings → Pages → Custom domain**, add e.g. `kit.macadmins.in`, then create a CNAME DNS record

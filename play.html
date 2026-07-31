@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#123a6b">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
+<title>Mac Admin Challenge — Live · MAIC 2026</title>
+<style>
+  :root{
+    --blue:#2f6fed;--accent:#5aa2ff;--cyan:#22c1dc;--navy:#081226;--card:#122a50;--card2:#16305c;
+    --ink:#eaf1ff;--muted:#9db4d8;--line:rgba(255,255,255,.12);--good:#35d0a5;--bad:#ff6b8a;--gold:#f5c542;
+    --spectrum:linear-gradient(90deg,#4f7df0,#22c1dc,#35d0a5,#f5c542,#f59042,#ec5f9e,#a96be8);
+    --blue-grad:linear-gradient(135deg,#2f6fed,#22c1dc);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(125% 90% at 50% -8%,#17468c 0%,#0d2650 45%,#060f24 100%);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;top:0;left:0;right:0;height:5px;background:var(--spectrum);z-index:99}
+  .wrap{max-width:520px;margin:0 auto;padding:26px 18px 40px;min-height:100vh;display:flex;flex-direction:column}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;margin-bottom:22px}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:var(--spectrum);display:grid;place-items:center;font-size:15px;color:#0b1226}
+  .logo small{display:block;font-size:9.5px;color:var(--muted);font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+  .screen{flex:1;display:none;flex-direction:column;animation:rise .4s}
+  .screen.on{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:10px}
+  h1{font-size:28px;font-weight:850;line-height:1.12;letter-spacing:-.4px;margin-bottom:10px}
+  h2{font-size:22px;font-weight:800;line-height:1.2;margin-bottom:8px}
+  p{color:var(--muted);line-height:1.5;font-size:15px}
+  .namein{width:100%;padding:16px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);color:var(--ink);font-size:17px;font-family:inherit;margin:18px 0 12px;outline:none}
+  .namein:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(90,162,255,.18)}
+  .namein::placeholder{color:#6f82a8}
+  .btn{width:100%;border:0;border-radius:15px;padding:17px;font-size:16.5px;font-weight:800;cursor:pointer;color:#0b1226;background:var(--spectrum);box-shadow:0 10px 26px rgba(47,111,237,.4);transition:transform .12s}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.4;box-shadow:none}
+  .btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink);box-shadow:none;text-decoration:none;display:block;text-align:center}
+  .foot{margin-top:auto;padding-top:20px}
+  .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(90,162,255,.4);background:rgba(90,162,255,.14);border-radius:99px;padding:6px 13px;margin-bottom:16px}
+  .qn{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .opt{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:17px 16px;margin-bottom:11px;color:var(--ink);font-size:16px;font-weight:600;cursor:pointer;transition:.14s;display:flex;align-items:center;gap:13px;line-height:1.35}
+  .opt:active{transform:scale(.985)}
+  .opt .k{flex:0 0 32px;height:32px;border-radius:9px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-weight:850;color:var(--muted)}
+  .opt.chosen{border-color:var(--accent);background:rgba(90,162,255,.16)}
+  .opt.correct{border-color:var(--good);background:rgba(53,208,165,.16)}
+  .opt.correct .k{background:var(--good);color:#04150e}
+  .opt.wrong{border-color:var(--bad);background:rgba(255,107,138,.14)}
+  .opt.wrong .k{background:var(--bad);color:#2a0007}
+  .opt[disabled]{cursor:default;opacity:.85}
+  .big-emoji{font-size:56px;text-align:center;margin:10px 0}
+  .center{text-align:center;margin:auto 0}
+  .pulse{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--accent);margin:0 3px;animation:blink 1s infinite}
+  .pulse:nth-child(2){animation-delay:.2s}.pulse:nth-child(3){animation-delay:.4s}
+  @keyframes blink{50%{opacity:.25}}
+  .scorebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;margin:16px 0}
+  .scorebox b{font-size:52px;background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:block;line-height:1}
+  .scorebox span{font-size:13px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+  .result-badge{font-size:15px;font-weight:850;padding:8px 16px;border-radius:99px;display:inline-block;margin-bottom:12px}
+  .result-badge.ok{background:rgba(53,208,165,.18);color:var(--good);border:1px solid rgba(53,208,165,.45)}
+  .result-badge.no{background:rgba(255,107,138,.16);color:var(--bad);border:1px solid rgba(255,107,138,.45)}
+  .exp{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 15px;font-size:14px;color:#dce6fb;margin-top:6px;line-height:1.5}
+  .err{background:rgba(255,107,138,.12);border:1px solid var(--bad);color:#ffd0d8;border-radius:12px;padding:14px;font-size:13.5px;line-height:1.5;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><span class="mark">⌘</span><div>Mac Admin Challenge<small>MAIC 2026 · Live</small></div></div>
+
+  <!-- JOIN -->
+  <section class="screen on" id="s-join">
+    <span class="tag">Live game</span>
+    <h1>Jump in — <span style="background:var(--spectrum);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">what's your name?</span></h1>
+    <p>The host drives the questions from the big screen. Answer here on your phone; watch the room's answers appear live up front.</p>
+    <input id="pname" class="namein" maxlength="22" autocomplete="off" placeholder="Your name">
+    <button class="btn" id="joinBtn" onclick="join()">Join the game →</button>
+    <div id="cfgerr" class="err" style="display:none"></div>
+  </section>
+
+  <!-- LOBBY / WAITING -->
+  <section class="screen" id="s-wait">
+    <div class="center">
+      <div class="big-emoji" id="waitEmoji">✅</div>
+      <h2 id="waitTitle">You're in!</h2>
+      <p id="waitMsg">Waiting for the host to start… <span class="pulse"></span><span class="pulse"></span><span class="pulse"></span></p>
+      <p style="margin-top:18px;font-size:13px"><a href="#" onclick="leaveGame();return false" style="color:var(--muted)">Not you? Change name</a></p>
+    </div>
+  </section>
+
+  <!-- QUESTION -->
+  <section class="screen" id="s-q">
+    <div class="qn" id="qn">Question 1</div>
+    <span class="tag" id="qtag">Myth or Legit?</span>
+    <h2 id="qprompt"></h2>
+    <p id="qsub" style="margin:-2px 0 14px"></p>
+    <div id="opts"></div>
+  </section>
+
+  <!-- ANSWERED / REVEAL -->
+  <section class="screen" id="s-res">
+    <div class="qn" id="rqn">Question 1</div>
+    <div id="resBadgeWrap"></div>
+    <h2 id="rprompt"></h2>
+    <div id="ropts"></div>
+    <div class="exp" id="rexp" style="display:none"></div>
+    <div class="foot"><p id="rwait" style="text-align:center">Waiting for the next question… <span class="pulse"></span><span class="pulse"></span><span class="pulse"></span></p></div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="s-end">
+    <span class="eyebrow">That's a wrap!</span>
+    <h1 id="endName">Nice work!</h1>
+    <div class="scorebox"><b id="endScore">0</b><span id="endOf">out of 6</span></div>
+    <p>Want your personal <b style="color:var(--ink)">Readiness Card</b> and the full Starter Kit? Play the self-paced version:</p>
+    <div class="foot">
+      <a class="btn ghost" href="challenge.html" style="margin-bottom:10px">🎮 Play the full challenge</a>
+      <a class="btn" href="index.html">🎁 Get the Starter Kit</a>
+    </div>
+  </section>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="live-questions.js"></script>
+<script>
+const Q=window.LIVE_QUESTIONS||[]; const N=Q.length;
+document.getElementById("endOf").textContent="out of "+N;
+let db,room,pid,name="",state={phase:"lobby",q:0,revealed:false},answersAll={},joined=false;
+
+// stable per-device id
+pid = localStorage.getItem("maic_pid");
+if(!pid){ pid="p"+Math.random().toString(36).slice(2,10); localStorage.setItem("maic_pid",pid); }
+const savedName=localStorage.getItem("maic_name"); if(savedName) document.getElementById("pname").value=savedName;
+
+function cfgOK(){ const c=window.FIREBASE_CONFIG||{}; return c.databaseURL && !/PASTE/.test(c.databaseURL); }
+if(!cfgOK()){
+  const e=document.getElementById("cfgerr"); e.style.display="block";
+  e.innerHTML="⚠️ The live game isn't configured yet. Ask the host, or try the self-paced <a href='challenge.html' style='color:var(--accent)'>challenge</a>.";
+  document.getElementById("joinBtn").disabled=true;
+}else{
+  firebase.initializeApp(window.FIREBASE_CONFIG);
+  db=firebase.database(); room=db.ref("rooms/"+(window.ROOM||"maic2026"));
+}
+
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); document.getElementById(id).classList.add("on"); window.scrollTo(0,0); }
+
+function join(){
+  if(!cfgOK())return;
+  name=(document.getElementById("pname").value||"").trim().slice(0,22)||"Anon";
+  localStorage.setItem("maic_name",name);
+  room.child("players/"+pid).update({name:name, joinedAt:Date.now()});
+  room.child("players/"+pid+"/score").transaction(s=> s==null?0:s);
+  joined=true;
+  // start listening
+  room.child("state").on("value",s=>{ state=s.val()||{phase:"lobby",q:0,revealed:false}; render(); });
+  room.child("answers").on("value",s=>{ answersAll=s.val()||{}; render(); });
+  render();
+}
+
+function myAnswer(q){ return (answersAll[q]&&answersAll[q][pid]) ? answersAll[q][pid] : null; }
+
+function render(){
+  if(!joined) return;
+  const phase=state.phase||"lobby";
+  if(phase==="lobby"){
+    document.getElementById("waitEmoji").textContent="✅";
+    document.getElementById("waitTitle").textContent="You're in, "+name+"!";
+    document.getElementById("waitMsg").innerHTML='Waiting for the host to start… <span class="pulse"></span><span class="pulse"></span><span class="pulse"></span>';
+    show("s-wait");
+  }
+  else if(phase==="end"){ renderEnd(); show("s-end"); }
+  else { // question phase
+    const idx=state.q||0, revealed=!!state.revealed, mine=myAnswer(idx);
+    if(!revealed && !mine){ renderQuestion(idx); show("s-q"); }
+    else { renderResult(idx, revealed, mine); show("s-res"); }
+  }
+}
+
+function renderQuestion(idx){
+  const q=Q[idx]; if(!q)return;
+  document.getElementById("qn").textContent=`Question ${idx+1} of ${N}`;
+  document.getElementById("qtag").textContent=q.tag;
+  document.getElementById("qprompt").textContent=q.prompt;
+  const sub=document.getElementById("qsub"); sub.textContent=q.sub||""; sub.style.display=q.sub?"block":"none";
+  const box=document.getElementById("opts"); box.innerHTML="";
+  q.options.forEach((opt,i)=>{
+    const b=document.createElement("button"); b.className="opt";
+    b.innerHTML=`<span class="k">${"ABCD"[i]}</span><span>${opt}</span>`;
+    b.onclick=()=>answer(idx,i,b);
+    box.appendChild(b);
+  });
+}
+
+function answer(idx,choice,btn){
+  if(myAnswer(idx))return;
+  const q=Q[idx]; const correct = choice===q.correct;
+  [...document.getElementById("opts").children].forEach(b=>b.disabled=true);
+  btn.classList.add("chosen");
+  room.child("answers/"+idx+"/"+pid).set({choice:choice, correct:correct, ts:Date.now()});
+  if(correct) room.child("players/"+pid+"/score").transaction(s=>(s||0)+1);
+  // render() will move to result/wait view on the answers listener
+}
+
+function renderResult(idx, revealed, mine){
+  const q=Q[idx];
+  document.getElementById("rqn").textContent=`Question ${idx+1} of ${N}`;
+  document.getElementById("rprompt").textContent=q.prompt;
+  const badge=document.getElementById("resBadgeWrap");
+  const opts=document.getElementById("ropts"); opts.innerHTML="";
+  q.options.forEach((opt,i)=>{
+    const el=document.createElement("div"); el.className="opt"; el.setAttribute("disabled","");
+    let cls="";
+    if(revealed && i===q.correct) cls=" correct";
+    else if(mine && mine.choice===i && !(revealed && i===q.correct)) cls = revealed? " wrong":" chosen";
+    el.className="opt"+cls;
+    el.innerHTML=`<span class="k">${"ABCD"[i]}</span><span>${opt}</span>`;
+    opts.appendChild(el);
+  });
+  if(!revealed){
+    badge.innerHTML=`<span class="result-badge ok">✓ Answer locked in</span>`;
+    document.getElementById("rexp").style.display="none";
+    document.getElementById("rwait").innerHTML='Waiting for the reveal… <span class="pulse"></span><span class="pulse"></span><span class="pulse"></span>';
+  } else {
+    const right = mine && mine.correct;
+    badge.innerHTML = right? `<span class="result-badge ok">✅ Correct! +1</span>` : `<span class="result-badge no">Not this time</span>`;
+    const ex=document.getElementById("rexp"); ex.style.display="block"; ex.innerHTML=`${q.exp} <b style="color:var(--gold)">Builds ${q.cc}.</b>`;
+    document.getElementById("rwait").innerHTML='Waiting for the next question… <span class="pulse"></span><span class="pulse"></span><span class="pulse"></span>';
+  }
+}
+
+/* Leave the game: drops this device's player record and lets them rejoin with a new name.
+   Handy when testing on one phone, or if someone typos their name. */
+function leaveGame(){
+  try{
+    if(room && pid){
+      room.child("players/"+pid).remove();
+      Q.forEach((_,qi)=>room.child("answers/"+qi+"/"+pid).remove());
+    }
+  }catch(e){}
+  localStorage.removeItem("maic_pid");
+  localStorage.removeItem("maic_name");
+  location.reload();
+}
+
+function renderEnd(){
+  room.child("players/"+pid+"/score").once("value",s=>{
+    const sc=s.val()||0;
+    document.getElementById("endName").textContent = (name?name+", ":"")+"nice work!";
+    document.getElementById("endScore").textContent=sc;
+  });
+}
+</script>
+</body>
+</html>
